@@ -1,26 +1,7 @@
 async function gameStart(canvasElement, canvasContext, loadResources, loadAudio) {
 
     const effects = {}
-    const effectArray = ["res/soundtrack.ogg","res/shift_piece.ogg","res/game_over.ogg","res/delete_lines.ogg","res/click.ogg"]
-    // if (window._js_binding.isIos()) {
-    //     effectArray.push("res/soundtrack.ogg")
-    //     effectArray.push("res/shift_piece.ogg")
-    //     effectArray.push("res/game_over.ogg")
-    //     effectArray.push("res/delete_lines.ogg")
-    //     effectArray.push("res/click.ogg")
-    // } else if (window._js_binding.isAndroid()) {
-    //     effectArray.push("res/soundtrack.acc")
-    //     effectArray.push("res/shift_piece.acc")
-    //     effectArray.push("res/game_over.acc")
-    //     effectArray.push("res/delete_lines.acc")
-    //     effectArray.push("res/click.acc")
-    // } else {
-    //     effectArray.push("res/soundtrack.mp3")
-    //     effectArray.push("res/shift_piece.mp3")
-    //     effectArray.push("res/game_over.mp3")
-    //     effectArray.push("res/delete_lines.mp3")
-    //     effectArray.push("res/click.mp3")
-    // }
+    const effectArray = ["res/soundtrack", "res/shift_piece", "res/game_over", "res/delete_lines", "res/click"]
     for (let i = 0; i < effectArray.length; i++) {
         const url = effectArray[i]
         effects[url] = await loadAudio(url)
@@ -44,7 +25,7 @@ Application.prototype.destroy = function () {
     this._initialized_ = false
 }
 Application.prototype.before = function () {
-    framework.playEffect("res/soundtrack.mp3", true)
+    framework.playEffect("res/soundtrack", true)
 }
 Application.prototype.init = function () {
     if (this._initialized_) {
@@ -165,7 +146,7 @@ GameOver.prototype.before = function () {
     this._playButtonNodeDirection = 1
     this.buttonRestartNode.setScale(this._playButtonNodeScale)
 
-    framework.playEffect("res/game_over.mp3")
+    framework.playEffect("res/game_over")
 }
 GameOver.prototype.update = function (deltaTime) {
 
@@ -699,7 +680,7 @@ GameRunning.prototype.update = function (deltaTime) {
                     oneRow[l] += 1
                 }
             }
-            framework.playEffect("res/delete_lines.mp3")
+            framework.playEffect("res/delete_lines")
         }
 
         let gameOver = 0
@@ -982,7 +963,7 @@ Cube.prototype.getPosition = function () {
 Cube.prototype.setOffsetX = function (x) {
 
     if (this.cubeCrossX(x)) {
-        framework.playEffect("res/shift_piece.mp3")
+        framework.playEffect("res/shift_piece")
         return false
     }
 
@@ -1003,7 +984,7 @@ Cube.prototype.rotateCube = function () {
 
     const r = (this.rotate + 1) % this.item.rotate.length
     if (this.cubeCrossR(r)) {
-        framework.playEffect("res/shift_piece.mp3")
+        framework.playEffect("res/shift_piece")
         return false
     }
 
