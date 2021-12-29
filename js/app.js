@@ -1,7 +1,7 @@
 function gameStart(canvasElement, canvasContext, loadResources, loadAudio) {
 
     const img = new Image()
-    img.alt = "俄罗斯方块"
+    img.alt = "XXX游戏"
     img.src = ""
 
     return {
