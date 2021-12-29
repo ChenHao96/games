@@ -960,16 +960,6 @@ Cube.prototype.getPosition = function () {
     }
     return result
 }
-Cube.prototype.setOffsetX = function (x) {
-
-    if (this.cubeCrossX(x)) {
-        framework.playEffect("res/shift_piece")
-        return false
-    }
-
-    this.offsetX += x
-    return true
-}
 Cube.prototype.setOffsetY = function (y) {
 
     if (this.cubeCrossY(y)) {
@@ -978,6 +968,16 @@ Cube.prototype.setOffsetY = function (y) {
     }
 
     this.offsetY += y
+    return true
+}
+Cube.prototype.setOffsetX = function (x) {
+
+    if (this.cubeCrossX(x)) {
+        framework.playEffect("res/shift_piece")
+        return false
+    }
+
+    this.offsetX += x
     return true
 }
 Cube.prototype.rotateCube = function () {
