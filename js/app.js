@@ -1,6 +1,7 @@
 async function gameStart(canvasElement, canvasContext, loadResources, loadAudio) {
 
     const effects = {}
+    // TODO: 需要判断IOS设备的播放音频
     const effectArray = ["res/soundtrack.mp3", "res/shift_piece.mp3", "res/game_over.mp3", "res/delete_lines.mp3", "res/click.mp3"]
     for (let i = 0; i < effectArray.length; i++) {
         const url = effectArray[i]
@@ -8,8 +9,10 @@ async function gameStart(canvasElement, canvasContext, loadResources, loadAudio)
     }
 
     const resources = await loadResources("res/tetris.png", true)
+
     await framework.run(canvasElement, canvasContext, resources, effects)
     framework.pushScene(new Application())
+
     const img = resources["favicon.ico"]
     img.alt = "俄罗斯方块"
     return resources
