@@ -407,7 +407,7 @@ GameRunning.prototype.init = function () {
     })
     this._drawNodes.push(linesTextNode)
     this.linesValueTextNode = framework.createNode({
-        res: "0", x: linesTextNode.x, y: linesTextNode.y + 56,
+        res: "0", x: linesTextNode.x, y: linesTextNode.y + 52,
         type: "text", fontSize: 36, fontFamily: "bold Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(this.linesValueTextNode)
