@@ -323,7 +323,7 @@ framework.run = (canvasElement, canvasContext, resources, effects) => {
                 const item = buttons[field]
                 if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
                     if (mouseDown) {
-                        framework.playEffect("res/click.mp3")
+                        framework.playEffect("res/click")
                         item._target.onClick()
                     }
                 }
