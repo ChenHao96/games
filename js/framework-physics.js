@@ -28,9 +28,9 @@ Rebound.prototype.setSize = function (size) {
 Rebound.prototype.init = function () {
     if (!this._initialized_) {
         this._initialized_ = true
-        this._reboundH_ = 0.8
+        this._reboundH_ = 0.7
         this._reboundCount_ = 0
-        this._reboundStep_ = 40
+        this._reboundStep_ = 50
         this._reboundSpeed_ = 10
         this._reboundHeight_ = (this._endPosition_.y - this._beginPosition_.y) * this._reboundH_
     }
