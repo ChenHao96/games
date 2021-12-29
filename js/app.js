@@ -12,7 +12,6 @@ async function gameStart(canvasElement, canvasContext, loadResources, loadAudio)
     framework.pushScene(new Application())
 
     const img = resources["favicon.ico"]
-    console.log(img)
     img.alt = "俄罗斯方块-欣欣专享"
     return resources
 }
