@@ -121,23 +121,13 @@
         })
     }
 
-    const effects = {}
-    const effectArray = ["res/soundtrack.mp3", "res/shift_piece.mp3", "res/game_over.mp3", "res/delete_lines.mp3", "res/click.mp3"]
-    for (let i = 0; i < effectArray.length; i++) {
-        const url = effectArray[i]
-        effects[url] = await loadAudio(url)
-    }
-
-    const resources = await loadResources("res/tetris.png", true)
-    await framework.run(canvasElement, canvasContext, resources, effects)
-    framework.pushScene(new Application())
-    bodyElement.removeChild(loading)
-
+    const resources = gameStart(canvasElement, canvasContext, loadResources, loadAudio)
     const favicon = resources["favicon.ico"]
     const iconLink = document.createElement("link")
     iconLink.rel = "shortcut icon"
     iconLink.type = "image/x-icon"
     iconLink.href = favicon.src
+    headTitle.innerHTML = favicon.alt
     headElement.appendChild(iconLink)
-    headTitle.innerHTML = "俄罗斯方块"
+    bodyElement.removeChild(loading)
 })()
