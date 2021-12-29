@@ -101,9 +101,16 @@ PictureUtil.prototype.cutPicture = function (item) {
     }
 
     context.drawImage(img, sx, sy, sw, sh, dx, dy, width, height)
-
     const image = new Image()
     image.src = canvas.toDataURL()
     image.alt = filename
-    return image
+
+    return new Promise((resolve, reject) => {
+        image.onload = () => {
+            resolve(image)
+        }
+        image.onerror = () => {
+            reject("加载失败")
+        }
+    })
 }

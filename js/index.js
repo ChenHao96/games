@@ -82,13 +82,13 @@
                     xhr.responseType = "json"
                     xhr.withCredentials = true
                     xhr.overrideMimeType('application/json')
-                    xhr.onload = () => {
+                    xhr.onload = async () => {
                         if (xhr.status === 200) {
                             const resources = {}
                             const picture = new PictureUtil(this)
                             const array = xhr.response.frames
                             for (let i = 0; i < array.length; i++) {
-                                const image = picture.cutPicture(array[i])
+                                const image = await picture.cutPicture(array[i])
                                 resources[image.alt] = image
                             }
                             resolve(resources)
