@@ -1,15 +1,32 @@
 async function gameStart(canvasElement, canvasContext, loadResources, loadAudio) {
 
     const effects = {}
-    // TODO: 需要判断IOS设备的播放音频
-    const effectArray = ["res/soundtrack.mp3", "res/shift_piece.mp3", "res/game_over.mp3", "res/delete_lines.mp3", "res/click.mp3"]
+    const effectArray = ["res/soundtrack.ogg","res/shift_piece.ogg","res/game_over.ogg","res/delete_lines.ogg","res/click.ogg"]
+    // if (window._js_binding.isIos()) {
+    //     effectArray.push("res/soundtrack.ogg")
+    //     effectArray.push("res/shift_piece.ogg")
+    //     effectArray.push("res/game_over.ogg")
+    //     effectArray.push("res/delete_lines.ogg")
+    //     effectArray.push("res/click.ogg")
+    // } else if (window._js_binding.isAndroid()) {
+    //     effectArray.push("res/soundtrack.acc")
+    //     effectArray.push("res/shift_piece.acc")
+    //     effectArray.push("res/game_over.acc")
+    //     effectArray.push("res/delete_lines.acc")
+    //     effectArray.push("res/click.acc")
+    // } else {
+    //     effectArray.push("res/soundtrack.mp3")
+    //     effectArray.push("res/shift_piece.mp3")
+    //     effectArray.push("res/game_over.mp3")
+    //     effectArray.push("res/delete_lines.mp3")
+    //     effectArray.push("res/click.mp3")
+    // }
     for (let i = 0; i < effectArray.length; i++) {
         const url = effectArray[i]
         effects[url] = await loadAudio(url)
     }
 
     const resources = await loadResources("res/tetris.png", true)
-
     await framework.run(canvasElement, canvasContext, resources, effects)
     framework.pushScene(new Application())
 
