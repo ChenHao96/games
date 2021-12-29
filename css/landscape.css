@@ -4,6 +4,13 @@
     margin: 0;
 }
 
+canvas{
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
 .audio-controls {
     top: 0;
     right: 0;
@@ -28,7 +35,6 @@
     margin: auto;
     width: 100vw;
     height: 56.25vw;
-    user-select: none;
     max-height: 100vh;
     max-width: 177.778vh;
     background-color: gray;
