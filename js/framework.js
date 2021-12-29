@@ -29,13 +29,13 @@ framework.setMuted = (muted) => {
     }
 }
 framework.playEffect = (url, loop) => {
-    let audio = framework._effects[url]
+    const audio = framework._effects[url]
     if (undefined !== audio) {
-        audio.loop = loop ? loop : false
 
         function plVoice() {
             audio.load()
             audio.play()
+            audio.loop = loop ? loop : false
             if (!this.hasRemove) {
                 this.hasRemove = true
                 framework._canvasElement.removeEventListener("click", plVoice, false)
@@ -290,7 +290,6 @@ framework.run = (canvasElement, canvasContext, resources, effects) => {
             framework._runnableId = setTimeout(timeoutFunc, timeout)
         }, fps)
 
-        // TODO: 旋转后坐标不对
         function getPointOnCanvas(canvas, x, y, item) {
             const bbox = canvas.getBoundingClientRect()
             const position = {
@@ -332,7 +331,6 @@ framework.run = (canvasElement, canvasContext, resources, effects) => {
             framework._canvasElement.style.cursor = ""
         }
         framework._canvasElement.onmousemove = function (e) {
-            // console.log(e) // TODO:
             framework._canvasElement.style.cursor = ""
             for (let field in buttons) {
                 const item = buttons[field]
