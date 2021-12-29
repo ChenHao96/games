@@ -28,17 +28,14 @@ framework.setMuted = (muted) => {
         audio.muted = muted
     }
 }
-framework.playEffect = (url, loop, callback) => {
+framework.playEffect = (url, loop) => {
     let audio = framework._effects[url]
     if (undefined !== audio) {
         audio.loop = loop ? loop : false
 
         function plVoice() {
-            audio.seek = audio.currentTime = 0
+            audio.load()
             audio.play()
-            if (undefined !== callback) {
-                audio.onended = callback
-            }
             if (!this.hasRemove) {
                 this.hasRemove = true
                 framework._canvasElement.removeEventListener("click", plVoice, false)
@@ -335,7 +332,7 @@ framework.run = (canvasElement, canvasContext, resources, effects) => {
             framework._canvasElement.style.cursor = ""
         }
         framework._canvasElement.onmousemove = function (e) {
-            console.log(e) // TODO:
+            // console.log(e) // TODO:
             framework._canvasElement.style.cursor = ""
             for (let field in buttons) {
                 const item = buttons[field]
