@@ -111,25 +111,13 @@
 
     const loadAudio = (url) => {
         return new Promise((resolve, reject) => {
+            const source = document.createElement("source")
+            source.src = url
+            source.type = "audio/mpeg"
             const audio = document.createElement("audio")
+            audio.appendChild(source)
             audio.controls = true
             audio.className = "audio-controls"
-
-            const source = document.createElement("source")
-            source.src = url + ".mp3"
-            source.type = "audio/mpeg"
-            audio.appendChild(source)
-
-            const source2 = document.createElement("source")
-            source2.src = url + ".ogg"
-            source2.type = "audio/ogg"
-            audio.appendChild(source2)
-
-            const source3 = document.createElement("source")
-            source3.src = url + ".acc"
-            source3.type = "audio/acc"
-            audio.appendChild(source3)
-
             audio.onerror = () => {
                 reject("加载失败!")
             }
