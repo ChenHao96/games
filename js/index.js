@@ -123,11 +123,13 @@
 
     const resources = await gameStart(canvasElement, canvasContext, loadResources, loadAudio)
     const favicon = resources["favicon.ico"]
-    const iconLink = document.createElement("link")
-    iconLink.rel = "shortcut icon"
-    iconLink.type = "image/x-icon"
-    iconLink.href = favicon.src
     headTitle.innerHTML = favicon.alt
-    headElement.appendChild(iconLink)
+    if(favicon.src.endsWith(".ico")){
+        const iconLink = document.createElement("link")
+        iconLink.rel = "shortcut icon"
+        iconLink.type = "image/x-icon"
+        iconLink.href = favicon.src
+        headElement.appendChild(iconLink)
+    }
     bodyElement.removeChild(loading)
 })()
