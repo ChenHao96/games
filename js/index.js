@@ -34,6 +34,7 @@
 
     function setCanvasOrientation(orientation, canvas) {
         const linkElement = document.createElement("link")
+        linkElement.id = "CanvasOrientation"
         linkElement.type = "text/css"
         linkElement.rel = "stylesheet"
         switch (orientation) {

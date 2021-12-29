@@ -4,11 +4,19 @@ const framework = {
     _resources: {},
     _effects: {},
     _muted: false,
-    _enableMedia: false
+    _enableMedia: false,
+    _direction: null
 }
 
-framework.isMobileDevice = () => {
-    return window._js_binding.isMobileDevice()
+framework.getDirection = () => {
+    if (null === framework._direction) {
+        const linkElement = document.getElementById("CanvasOrientation")
+        let orientation = linkElement.href
+        orientation = orientation.substring(orientation.lastIndexOf("/") + 1)
+        orientation = orientation.substring(0, orientation.lastIndexOf("."))
+        framework._direction = orientation
+    }
+    return framework._direction
 }
 
 framework.setVolume = (volume) => {
@@ -290,12 +298,26 @@ framework.run = (canvasElement, canvasContext, resources, effects) => {
             framework._runnableId = setTimeout(timeoutFunc, timeout)
         }, fps)
 
-        // TODO: 旋转后坐标不对
+        const direction = framework.getDirection()
         function getPointOnCanvas(canvas, x, y, item) {
             const bbox = canvas.getBoundingClientRect()
             const position = {
                 x: x / bbox.width * canvas.width,
                 y: y / bbox.height * canvas.height
+            }
+            switch (direction) {
+                case "portraiture":// 竖屏
+                    if (bbox.width >= bbox.height) {
+                        position.x = x / bbox.height * canvas.width
+                        position.y = y / bbox.width * canvas.height
+                    }
+                    break;
+                default:// 横屏
+                    if (bbox.height >= bbox.width) {
+                        position.x = x / bbox.height * canvas.width
+                        position.y = y / bbox.width * canvas.height
+                    }
+                    break;
             }
             if (position.x >= item.beginX && position.x <= item.endX) {
                 if (position.y >= item.beginY && position.y <= item.endY) {
@@ -332,12 +354,11 @@ framework.run = (canvasElement, canvasContext, resources, effects) => {
             framework._canvasElement.style.cursor = ""
         }
         framework._canvasElement.onmousemove = function (e) {
-            console.log(e)
             framework._canvasElement.style.cursor = ""
             for (let field in buttons) {
                 const item = buttons[field]
                 if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                    if (!framework.isMobileDevice()) {
+                    if (!window._js_binding.isMobileDevice()) {
                         framework._canvasElement.style.cursor = "pointer"
                     }
                 }
