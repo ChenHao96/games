@@ -1,0 +1,143 @@
+(async function () {
+
+    if (undefined === window._js_binding) {
+        window._js_binding = {
+            openUrl: (url) => {
+                window.open(url)
+            },
+            isMobileDevice: () => {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            }
+        }
+    }
+
+    const bodyElement = document.getElementsByTagName("body")[0]
+
+    function createCanvas() {
+        bodyElement.className = "canvas-panel"
+        const canvasContainer = document.createElement("div")
+        canvasContainer.className = "canvas-container"
+        const canvasElement = document.createElement("canvas")
+        canvasContainer.appendChild(canvasElement)
+        bodyElement.appendChild(canvasContainer)
+        return canvasElement
+    }
+
+    const headElement = document.getElementsByTagName("head")[0]
+    const headTitle = headElement.getElementsByTagName("title")[0]
+
+    function setCanvasOrientation(orientation, canvas) {
+        const linkElement = document.createElement("link")
+        linkElement.type = "text/css"
+        linkElement.rel = "stylesheet"
+        switch (orientation) {
+            case "portrait":// 竖屏
+                canvas.height = 1920
+                canvas.width = 1080
+                linkElement.href = "css/portraiture.css"
+                headElement.appendChild(linkElement)
+                break;
+            case "landscape":// 横屏
+                canvas.width = 1920
+                canvas.height = 1080
+                linkElement.href = "css/landscape.css"
+                headElement.appendChild(linkElement)
+                break;
+        }
+    }
+
+    const linkElement = document.createElement("link")
+    linkElement.type = "text/css"
+    linkElement.rel = "stylesheet"
+    linkElement.href = "css/loading.css"
+    headElement.appendChild(linkElement)
+
+    const loading = document.createElement("div")
+    loading.className = "loading"
+    const load = document.createElement("div")
+    load.className = "load"
+    const text = document.createElement("div")
+    text.textContent = "资源加载中,请稍后..."
+    text.className = "text"
+    loading.appendChild(load)
+    loading.appendChild(text)
+    bodyElement.appendChild(loading)
+
+    function loadResources(url, split) {
+        return new Promise((resolve, reject) => {
+            const img = new Image()
+            img.src = url
+            img.onerror = function () {
+                reject("资源加载失败!")
+            }
+            img.onload = function () {
+                if (split) {
+                    const xhr = new XMLHttpRequest()
+                    xhr.responseType = "json"
+                    xhr.withCredentials = true
+                    xhr.overrideMimeType('application/json')
+                    xhr.onload = () => {
+                        if (xhr.status === 200) {
+                            const resources = {}
+                            const picture = new PictureUtil(this)
+                            const array = xhr.response.frames
+                            for (let i = 0; i < array.length; i++) {
+                                const image = picture.cutPicture(array[i])
+                                resources[image.alt] = image
+                            }
+                            resolve(resources)
+                        } else if (xhr.status === 404) {
+                            reject("图片分割失败")
+                        }
+                    }
+                    xhr.open("GET", this.src.substr(0, this.src.lastIndexOf('.')) + ".json")
+                    xhr.send()
+                } else {
+                    resolve(this)
+                }
+            }
+        })
+    }
+
+    const canvasElement = createCanvas()
+    setCanvasOrientation("portrait", canvasElement)
+    const canvasContext = canvasElement.getContext('2d')
+
+    const loadAudio = (url) => {
+        return new Promise((resolve, reject) => {
+            const source = document.createElement("source")
+            source.src = url
+            source.type = "audio/mpeg"
+            const audio = document.createElement("audio")
+            audio.appendChild(source)
+            audio.controls = true
+            audio.className = "audio-controls"
+            audio.onerror = () => {
+                reject("加载失败!")
+            }
+            audio.oncanplaythrough = () => {
+                resolve(audio)
+            }
+        })
+    }
+
+    const effects = {}
+    const effectArray = ["res/soundtrack.mp3", "res/shift_piece.mp3", "res/game_over.mp3", "res/delete_lines.mp3", "res/click.mp3"]
+    for (let i = 0; i < effectArray.length; i++) {
+        const url = effectArray[i]
+        effects[url] = await loadAudio(url)
+    }
+
+    const resources = await loadResources("res/tetris.png", true)
+    await framework.run(canvasElement, canvasContext, resources, effects)
+    framework.pushScene(new Application())
+    bodyElement.removeChild(loading)
+
+    const favicon = resources["favicon.ico"]
+    const iconLink = document.createElement("link")
+    iconLink.rel = "shortcut icon"
+    iconLink.type = "image/x-icon"
+    iconLink.href = favicon.src
+    headElement.appendChild(iconLink)
+    headTitle.innerHTML = "俄罗斯方块"
+})()
