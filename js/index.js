@@ -5,8 +5,14 @@
             openUrl: (url) => {
                 window.open(url)
             },
+            isIos: () => {
+                return /iPhone|iPad|iPod/i.test(navigator.userAgent)
+            },
+            isAndroid: () => {
+                return /Android/i.test(navigator.userAgent)
+            },
             isMobileDevice: () => {
-                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
             }
         }
     }
@@ -124,7 +130,7 @@
     const resources = await gameStart(canvasElement, canvasContext, loadResources, loadAudio)
     const favicon = resources["favicon.ico"]
     headTitle.innerHTML = favicon.alt
-    if(favicon.src.endsWith(".ico")){
+    if (favicon.src.endsWith(".ico")) {
         const iconLink = document.createElement("link")
         iconLink.rel = "shortcut icon"
         iconLink.type = "image/x-icon"
