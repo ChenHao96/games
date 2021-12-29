@@ -293,6 +293,7 @@ framework.run = (canvasElement, canvasContext, resources, effects) => {
             framework._runnableId = setTimeout(timeoutFunc, timeout)
         }, fps)
 
+        // TODO: 旋转后坐标不对
         function getPointOnCanvas(canvas, x, y, item) {
             const bbox = canvas.getBoundingClientRect()
             const position = {
@@ -334,6 +335,7 @@ framework.run = (canvasElement, canvasContext, resources, effects) => {
             framework._canvasElement.style.cursor = ""
         }
         framework._canvasElement.onmousemove = function (e) {
+            console.log(e) // TODO:
             framework._canvasElement.style.cursor = ""
             for (let field in buttons) {
                 const item = buttons[field]
