@@ -39,9 +39,10 @@ framework.setMuted = (muted) => {
 framework.playEffect = (url, loop) => {
     const audio = framework._effects[url]
     if (undefined !== audio) {
-
+        // TODO: BUG播放声音会关闭其他声音
         function plVoice() {
-            audio.load()
+            audio.pause()
+            audio.currentTime = 0
             audio.play()
             audio.loop = loop ? loop : false
             if (!this.hasRemove) {
@@ -299,6 +300,7 @@ framework.run = (canvasElement, canvasContext, resources, effects) => {
         }, fps)
 
         const direction = framework.getDirection()
+
         function getPointOnCanvas(canvas, x, y, item) {
             const bbox = canvas.getBoundingClientRect()
             const position = {

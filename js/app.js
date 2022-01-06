@@ -525,6 +525,7 @@ GameRunning.prototype.init = function () {
     Cube.level = 0
     Cube.lines = 0
     Cube.totalScore = 0
+    Cube.deleteCount = 0
     Cube.array2List = []
 
     const col = gameBlockCol, row = gameBlockRow
@@ -655,12 +656,18 @@ GameRunning.prototype.update = function (deltaTime) {
             oneRow.unique()
             Cube.lines += oneRow.length
             Cube.totalScore += oneRow.length * 10
-            const level = Math.round(Cube.lines / 5)
-            if (level !== Cube.level) {
-                Cube.level = level
-                this.moveSpeed_ -= 0.1
+            if (oneRow.length > 1) {
+                Cube.totalScore += oneRow.length * 2
             }
 
+            Cube.deleteCount += 1
+            const level = Math.round(Cube.deleteCount / 10)
+            if (level !== Cube.level) {
+                Cube.level = level
+                this.moveSpeed_ -= 0.05
+            }
+
+            let lastRow = undefined
             oneRow = oneRow.sort()
             while (oneRow.length > 0) {
                 const rowNum = oneRow.pop()
@@ -676,6 +683,13 @@ GameRunning.prototype.update = function (deltaTime) {
                         }
                     }
                 }
+                if (undefined === lastRow) {
+                    lastRow = rowNum
+                }
+                if (lastRow - rowNum <= 1) {
+                    Cube.totalScore += 2
+                }
+                lastRow = rowNum
                 for (let l = 0; l < oneRow.length; l++) {
                     oneRow[l] += 1
                 }
@@ -935,6 +949,7 @@ function Cube(type, rotate) {
 
 Cube.level = 0
 Cube.lines = 0
+Cube.deleteCount = 0
 Cube.totalScore = 0
 const gameBlockCol = 10, gameBlockRow = 19
 Cube.prototype.setOffset = function (x, y) {
