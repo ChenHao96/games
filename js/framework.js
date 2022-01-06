@@ -7,7 +7,6 @@ const framework = {
     _enableMedia: false,
     _direction: null
 }
-
 framework.getDirection = () => {
     if (null === framework._direction) {
         const linkElement = document.getElementById("CanvasOrientation")
@@ -18,44 +17,81 @@ framework.getDirection = () => {
     }
     return framework._direction
 }
-
-framework.setVolume = (volume) => {
-    framework._volume = volume / 100
-    for (let field in framework._effects) {
-        const audio = framework._effects[field]
-        audio.volume = framework._volume
-    }
-}
 framework.getMuted = () => {
-    return this._muted
+    return framework._muted
+}
+framework.setVolume = (volume) => {
+    framework._volume = Math.round(Math.abs(volume % 101)) / 100
+    for (let url in loopAudioList) {
+        const audio = loopAudioList[url]
+        if (audio) {
+            audio.volume = framework._volume
+        }
+    }
+    for (let index in playingAudio) {
+        const audio = playingAudio[index]
+        if (audio) {
+            audio.volume = framework._volume
+        }
+    }
 }
 framework.setMuted = (muted) => {
-    this._muted = muted
-    for (let field in framework._effects) {
-        const audio = framework._effects[field]
-        audio.muted = muted
+    framework._muted = muted
+    for (let url in loopAudioList) {
+        const audio = loopAudioList[url]
+        if (audio) {
+            audio.muted = framework._muted
+        }
+    }
+    for (let index in playingAudio) {
+        const audio = playingAudio[index]
+        if (audio) {
+            audio.muted = framework._muted
+        }
     }
 }
+let audioIndex = 0
+const loopAudioList = {}, waitPlayAudio = [], playingAudio = {}
 framework.playEffect = (url, loop) => {
-    const audio = framework._effects[url]
+    if (framework._muted) {
+        return
+    }
+    const body = document.getElementsByTagName("body")[0]
+    const loopAudio = loopAudioList[url]
+    if (undefined !== loopAudio) {
+        loopAudio.pause()
+        delete loopAudioList[url]
+        body.removeChild(loopAudio)
+    }
+    const audio = framework._effects[url].cloneNode(true)
     if (undefined !== audio) {
-        // TODO: BUG播放声音会关闭其他声音
-        function plVoice() {
-            audio.pause()
-            audio.currentTime = 0
-            audio.play()
-            audio.loop = loop ? loop : false
-            if (!this.hasRemove) {
-                this.hasRemove = true
-                framework._canvasElement.removeEventListener("click", plVoice, false)
+        if (loop) {
+            audio.loop = true
+            loopAudioList[url] = audio
+        } else {
+            audioIndex = (audioIndex + 1) % 10000
+            const index = audioIndex
+            playingAudio[index] = audio
+            audio.onended = function () {
+                delete playingAudio[index]
+                body.removeChild(this)
             }
         }
-
+        body.appendChild(audio)
         if (framework._enableMedia) {
-            plVoice()
+            audio.play()
         } else {
-            framework._enableMedia = true
-            framework._canvasElement.addEventListener("click", plVoice, false)
+            waitPlayAudio.push(audio)
+            if (!this.hasRemove) {
+                this.hasRemove = true
+                framework._canvasElement.addEventListener("click", function plVoice() {
+                    framework._enableMedia = true
+                    while (waitPlayAudio.length > 0) {
+                        waitPlayAudio.pop().play()
+                    }
+                    framework._canvasElement.removeEventListener("click", plVoice, false)
+                }, false)
+            }
         }
     }
 }
