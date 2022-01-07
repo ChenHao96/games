@@ -60,6 +60,7 @@ window.GameAudioManager = (() => {
             document.body.removeChild(this)
         }
         document.body.appendChild(appendAudio)
+        appendAudio.volume = effectsVolume
         playMusic(appendAudio)
     }
     let cacheBackgroundMusic = undefined
@@ -74,6 +75,7 @@ window.GameAudioManager = (() => {
         }
         cacheBackgroundMusic.loop = true
         document.body.appendChild(cacheBackgroundMusic)
+        cacheBackgroundMusic.volume = backgroundVolume
         playMusic(cacheBackgroundMusic)
     }
     GameAudioManager.getMuted = function () {
@@ -91,8 +93,12 @@ window.GameAudioManager = (() => {
             }
         }
     }
+    let effectsVolume = 1
+    GameAudioManager.getEffectsVolume = function () {
+        return effectsVolume * 100
+    }
     GameAudioManager.setEffectsVolume = function (volume) {
-        const effectsVolume = Math.round(Math.abs(volume % 101)) / 100
+        effectsVolume = Math.floor(Math.abs(volume % 101)) / 100
         for (let index in playingAudio) {
             const audio = playingAudio[index]
             if (audio) {
@@ -100,8 +106,12 @@ window.GameAudioManager = (() => {
             }
         }
     }
+    let backgroundVolume = 1
+    GameAudioManager.getBackgroundVolume = function () {
+        return backgroundVolume * 100
+    }
     GameAudioManager.setBackgroundVolume = function (volume) {
-        const backgroundVolume = Math.round(Math.abs(volume % 101)) / 100
+        backgroundVolume = Math.floor(Math.abs(volume % 101)) / 100
         if (cacheBackgroundMusic) {
             cacheBackgroundMusic.volume = backgroundVolume
         }
