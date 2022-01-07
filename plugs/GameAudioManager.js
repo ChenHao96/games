@@ -1,13 +1,4 @@
-function GameAudioManager() {
-    const waitPlayAudio = []
-    let audioIndex = 0, managerMuted = false, enableMedia = false
-    document.addEventListener("focus", function playVoice() {
-        document.removeEventListener("focus", playVoice, false)
-        enableMedia = true
-        while (waitPlayAudio.length > 0) {
-            waitPlayAudio.pop().play()
-        }
-    }, false)
+window.GameAudioManager = (() => {
     const createAudioControl = (name) => {
         const audio = document.createElement("audio")
         cacheSoundEffect[name] = audio
@@ -25,13 +16,33 @@ function GameAudioManager() {
         source3.src = name + ".acc"
         source3.type = "audio/acc"
         audio.appendChild(source3)
+        const source4 = document.createElement("source")
+        source4.src = name + ".wav"
+        source4.type = "audio/wav"
+        audio.appendChild(source4)
         const embed = document.createElement("embed")
         embed.src = name + ".mp3"
         audio.appendChild(embed)
         return audio
     }
-    const cacheSoundEffect = {}, playingAudio = {}
-    const body = document.getElementsByTagName("body")[0]
+    let enableMedia = false
+    const waitPlayAudio = []
+    const playMusic = (music) => {
+        if (enableMedia) {
+            music.play()
+        } else {
+            waitPlayAudio.push(music)
+            document.addEventListener("click", function playVoice() {
+                document.removeEventListener("click", playVoice, false)
+                enableMedia = true
+                while (waitPlayAudio.length > 0) {
+                    waitPlayAudio.pop().play()
+                }
+            }, false)
+        }
+    }
+    let audioIndex = 0, managerMuted = false
+    const cacheSoundEffect = {}, playingAudio = {}, GameAudioManager = {}
     GameAudioManager.playSoundEffect = function (name) {
         let audio = cacheSoundEffect[name]
         if (undefined === audio) {
@@ -46,32 +57,24 @@ function GameAudioManager() {
         playingAudio[index] = appendAudio
         appendAudio.onended = function () {
             delete playingAudio[index]
-            body.removeChild(this)
+            document.body.removeChild(this)
         }
-        body.appendChild(appendAudio)
-        if (enableMedia) {
-            appendAudio.play()
-        } else {
-            waitPlayAudio.push(appendAudio)
-        }
+        document.body.appendChild(appendAudio)
+        playMusic(appendAudio)
     }
     let cacheBackgroundMusic = undefined
     GameAudioManager.setBackgroundMusic = function (name) {
         if (cacheBackgroundMusic) {
             cacheBackgroundMusic.pause()
-            body.removeChild(cacheBackgroundMusic)
+            document.body.removeChild(cacheBackgroundMusic)
         }
-        let cacheBackgroundMusic = cacheSoundEffect[name]
+        cacheBackgroundMusic = cacheSoundEffect[name]
         if (undefined === cacheBackgroundMusic) {
             cacheBackgroundMusic = createAudioControl(name)
         }
         cacheBackgroundMusic.loop = true
-        body.appendChild(cacheBackgroundMusic)
-        if (enableMedia) {
-            cacheBackgroundMusic.play()
-        } else {
-            waitPlayAudio.push(cacheBackgroundMusic)
-        }
+        document.body.appendChild(cacheBackgroundMusic)
+        playMusic(cacheBackgroundMusic)
     }
     GameAudioManager.getMuted = function () {
         return managerMuted
@@ -103,4 +106,5 @@ function GameAudioManager() {
             cacheBackgroundMusic.volume = backgroundVolume
         }
     }
-}
+    return GameAudioManager
+})()
