@@ -647,7 +647,7 @@ GameRunning.prototype.update = function (deltaTime) {
             Cube.lines += oneRow.length
             Cube.totalScore += oneRow.length * 10
 
-            const level = Math.round(Cube.lines / 10)
+            const level = Math.floor(Cube.lines / 10)
             if (level !== Cube.level) {
                 Cube.level = level
                 this.moveSpeed_ -= 0.05
