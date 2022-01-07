@@ -1,14 +1,7 @@
-async function gameStart(canvasElement, canvasContext, loadResources, loadAudio) {
-
-    const effects = {}
-    const effectArray = ["res/soundtrack", "res/shift_piece", "res/game_over", "res/delete_lines", "res/click"]
-    for (let i = 0; i < effectArray.length; i++) {
-        const url = effectArray[i]
-        effects[url] = await loadAudio(url)
-    }
+async function gameStart(canvasElement, canvasContext, loadResources) {
 
     const resources = await loadResources("res/tetris.png", true)
-    await framework.run(canvasElement, canvasContext, resources, effects)
+    await framework.run(canvasElement, canvasContext, resources)
     framework.pushScene(new Application())
 
     const img = resources["favicon.ico"]

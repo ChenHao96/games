@@ -2,9 +2,6 @@ const framework = {
     _uuid: 0,
     _volume: 1,
     _resources: {},
-    _effects: {},
-    _muted: false,
-    _enableMedia: false,
     _direction: null
 }
 framework.getDirection = () => {
@@ -18,81 +15,20 @@ framework.getDirection = () => {
     return framework._direction
 }
 framework.getMuted = () => {
-    return framework._muted
+    return GameAudioManager.getMuted()
 }
 framework.setVolume = (volume) => {
-    framework._volume = Math.round(Math.abs(volume % 101)) / 100
-    for (let url in loopAudioList) {
-        const audio = loopAudioList[url]
-        if (audio) {
-            audio.volume = framework._volume
-        }
-    }
-    for (let index in playingAudio) {
-        const audio = playingAudio[index]
-        if (audio) {
-            audio.volume = framework._volume
-        }
-    }
+    GameAudioManager.setEffectsVolume(volume)
+    GameAudioManager.setBackgroundVolume(volume)
 }
 framework.setMuted = (muted) => {
-    framework._muted = muted
-    for (let url in loopAudioList) {
-        const audio = loopAudioList[url]
-        if (audio) {
-            audio.muted = framework._muted
-        }
-    }
-    for (let index in playingAudio) {
-        const audio = playingAudio[index]
-        if (audio) {
-            audio.muted = framework._muted
-        }
-    }
+    GameAudioManager.setMuted(muted)
 }
-let audioIndex = 0
-const loopAudioList = {}, waitPlayAudio = [], playingAudio = {}
 framework.playEffect = (url, loop) => {
-    if (framework._muted) {
-        return
-    }
-    const body = document.getElementsByTagName("body")[0]
-    const loopAudio = loopAudioList[url]
-    if (undefined !== loopAudio) {
-        loopAudio.pause()
-        delete loopAudioList[url]
-        body.removeChild(loopAudio)
-    }
-    const audio = framework._effects[url].cloneNode(true)
-    if (undefined !== audio) {
-        if (loop) {
-            audio.loop = true
-            loopAudioList[url] = audio
-        } else {
-            audioIndex = (audioIndex + 1) % 10000
-            const index = audioIndex
-            playingAudio[index] = audio
-            audio.onended = function () {
-                delete playingAudio[index]
-                body.removeChild(this)
-            }
-        }
-        body.appendChild(audio)
-        if (framework._enableMedia) {
-            audio.play()
-        } else {
-            waitPlayAudio.push(audio)
-            if (!this.hasRemove) {
-                this.hasRemove = true
-                framework._canvasElement.addEventListener("click", function plVoice() {
-                    framework._enableMedia = true
-                    while (waitPlayAudio.length > 0) {
-                        waitPlayAudio.pop().play()
-                    }
-                    framework._canvasElement.removeEventListener("click", plVoice, false)
-                }, false)
-            }
-        }
+    if (loop) {
+        GameAudioManager.setBackgroundMusic(url)
+    } else {
+        GameAudioManager.playSoundEffect(url)
     }
 }
 
@@ -231,13 +167,12 @@ framework.getImageByFileName = (fileName) => {
     return framework._resources[fileName]
 }
 
-framework.run = (canvasElement, canvasContext, resources, effects) => {
+framework.run = (canvasElement, canvasContext, resources) => {
     return new Promise((resolve) => {
 
         framework._canvasElement = canvasElement
         framework._canvasContext = canvasContext
         framework._resources = resources
-        framework._effects = effects
         framework._fps_ = 60
 
         let buttons = {}
