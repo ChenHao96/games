@@ -631,16 +631,14 @@ GameRunning.prototype.update = function (deltaTime) {
     if (!this.currentCube.enableOffsetY()) {
 
         let oneRow = []
-        const ps = this.currentCube.getPosition()
-        for (let i = 0; i < ps.length; i++) {
-            const item = ps[i]
-            const row = Cube.array2List[item.y]
+        for (let i = 0; i < Cube.array2List.length; i++) {
             let v = 0
+            const row = Cube.array2List[i]
             for (let j = 0; j < row.length; j++) {
                 v += undefined === row[j].value ? 0 : row[j].value
             }
             if (v === row.length) {
-                oneRow.push(item.y)
+                oneRow.push(i)
             }
         }
 
