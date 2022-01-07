@@ -25,6 +25,9 @@ function GameAudioManager() {
         source3.src = name + ".acc"
         source3.type = "audio/acc"
         audio.appendChild(source3)
+        const embed = document.createElement("embed")
+        embed.src = name + ".mp3"
+        audio.appendChild(embed)
         return audio
     }
     const cacheSoundEffect = {}, playingAudio = {}
