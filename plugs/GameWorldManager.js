@@ -2,7 +2,7 @@ window.GameWorldManager = (() => {
     const GameWorldManager = {
         Direction: {
             landscape: "landscape",
-            portrait: "portrait"
+            portraiture: "portraiture"
         }
     }
     let worldDirection = "unknown"
@@ -20,9 +20,9 @@ window.GameWorldManager = (() => {
                 orientationCss.rel = "stylesheet"
                 document.head.appendChild(orientationCss)
             }
-            if (GameWorldManager.Direction.portrait === worldDirection) {
+            if (GameWorldManager.Direction.portraiture === worldDirection) {
                 orientationCss.href = "css/portraiture.css"
-            } else {
+            } else if (GameWorldManager.Direction.landscape === worldDirection) {
                 orientationCss.href = "css/landscape.css"
             }
         }
@@ -46,19 +46,16 @@ window.GameWorldManager = (() => {
     }
     let worldWidth = 0, worldHeight = 0
     GameWorldManager.getWorldSize = function () {
-        return {
-            width: worldWidth,
-            height: worldHeight
-        }
+        return {width: worldWidth, height: worldHeight}
     }
     GameWorldManager.setWorldSize = function (width, height) {
         worldWidth = Math.floor(Math.abs(width))
         worldHeight = Math.floor(Math.abs(height))
-        let canvasWidth, canvasHeight, hScale, wScale
-        if (GameWorldManager.Direction.portrait === worldDirection) {
+        let canvasWidth, canvasHeight, hScale = 0, wScale = 0
+        if (GameWorldManager.Direction.portraiture === worldDirection) {
             hScale = 1920 * (worldWidth / 1080)
             wScale = 1080 * (worldHeight / 1920)
-        } else {
+        } else if (GameWorldManager.Direction.landscape === worldDirection) {
             hScale = 1080 * (worldWidth / 1920)
             wScale = 1920 * (worldHeight / 1080)
         }
