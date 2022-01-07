@@ -1,4 +1,4 @@
-function gameStart(canvasElement, canvasContext, loadResources, loadAudio) {
+function gameStart(canvasElement, canvasContext, loadResources) {
 
     const img = new Image()
     img.alt = "XXX游戏"
