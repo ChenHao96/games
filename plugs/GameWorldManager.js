@@ -8,13 +8,12 @@ window.GameWorldManager = (() => {
     GameWorldManager.getDirection = function () {
         return worldDirection
     }
+    let orientationCss = undefined
     GameWorldManager.setDirection = function (direction) {
         if (GameWorldManager.Direction[direction] === direction) {
             worldDirection = direction
-            let orientationCss = document.getElementById("CanvasOrientation")
-            if (null === orientationCss || undefined === orientationCss) {
+            if (undefined === orientationCss) {
                 orientationCss = document.createElement("style")
-                orientationCss.id = "CanvasOrientation"
                 document.head.appendChild(orientationCss)
             }
             if (GameWorldManager.Direction.portraiture === worldDirection) {

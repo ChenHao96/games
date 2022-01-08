@@ -33,9 +33,11 @@ window.GameDrawManager = (() => {
         }
     }
     GameDrawManager.popScene = () => {
-        const scene = scenes.pop()
-        if (scene) {
-            scene.runExit()
+        if(scenes && scenes.length>0){
+            const scene = scenes.pop()
+            if (scene) {
+                scene.runExit()
+            }
         }
     }
     GameDrawManager.setTitle = (title) => {
