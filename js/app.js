@@ -1,3 +1,25 @@
+Array.unique = function (array) {
+    const obj = {}
+    for (let i = 0; i < array.length; i++) {
+        const value = array[i]
+        obj[value] = value
+    }
+    const result = []
+    for (let field in obj) {
+        result.push(obj[field])
+    }
+    return result
+}
+
+Array.prototype.unique = function () {
+    const array = Array.unique(this)
+    for (let i = 0; i < array.length; i++) {
+        this[i] = array[i]
+    }
+    this.length = array.length
+    return this
+}
+
 function Application() {
     this.destroy()
 }
@@ -1055,12 +1077,55 @@ async function gameStart(canvasElement, canvasContext, loadResources) {
     return resources
 }
 
-(function () {
+(async function () {
+
+    function loadResources(url, split) {
+        return new Promise((resolve, reject) => {
+            const img = new Image()
+            img.src = url
+            img.onerror = function () {
+                reject("资源加载失败!")
+            }
+            img.onload = function () {
+                if (split) {
+                    const xhr = new XMLHttpRequest()
+                    xhr.responseType = "json"
+                    xhr.withCredentials = true
+                    xhr.overrideMimeType('application/json')
+                    xhr.onload = async () => {
+                        if (xhr.status === 200) {
+                            const resources = {}
+                            const picture = new PictureUtil(this)
+                            const array = xhr.response.frames
+                            for (let i = 0; i < array.length; i++) {
+                                const image = await picture.cutPicture(array[i])
+                                resources[image.alt] = image
+                            }
+                            resolve(resources)
+                        } else if (xhr.status === 404) {
+                            reject("图片分割失败")
+                        }
+                    }
+                    xhr.open("GET", this.src.substr(0, this.src.lastIndexOf('.')) + ".json")
+                    xhr.send()
+                } else {
+                    resolve(this)
+                }
+            }
+        })
+    }
+
+    const resources = await loadResources("res/tetris.png", true)
+    const img = resources["favicon.ico"]
+    GameDrawManager.setTitle("俄罗斯方块-欣欣专享")
+    GameDrawManager.setFavicon(img.src)
+
     GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
     GameWorldManager.setWorldSize(1080, 1920)
     GameScreenClick.activityClick()
-    // framework.pushScene(new Application())
-    // framework.run()
+
+    await framework.pushScene(new Application())
+    await framework.run(resources)
 
     const loadings = document.body.getElementsByClassName("loading")
     if (loadings && loadings.length > 0) {
