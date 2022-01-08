@@ -141,18 +141,21 @@ framework.createNode = (node) => {
             return imageSprite
         }
         case "button": {
-            // TODO:
-            const imageSprite = new ImageSprite()
-            imageSprite.setSrc(res.src)
-            imageSprite.setPosition(x, y)
-            return imageSprite
+            const buttonSprite = new ButtonSprite(res.src)
+            buttonSprite.setSrc()
+            buttonSprite.setPosition(x, y)
+            const fuc = buttonSprite.getButtonMovePosition
+            const clickId = GameScreenClick.addClickItem(fuc)
+            buttonSprite.setScreenClickId(clickId)
+            return buttonSprite
         }
         case "switch": {
-            // TODO:
-            const imageSprite = new ImageSprite()
-            imageSprite.setSrc(res.src)
-            imageSprite.setPosition(x, y)
-            return imageSprite
+            const switchSprite = new SwitchSprite(res.src, node.res2.src)
+            switchSprite.setPosition(x, y)
+            const fuc = switchSprite.getButtonMovePosition
+            const clickId = GameScreenClick.addClickItem(fuc)
+            switchSprite.setScreenClickId(clickId)
+            return switchSprite
         }
     }
     // const uuid = framework._uuid += 1

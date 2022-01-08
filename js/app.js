@@ -58,7 +58,7 @@ Application.prototype.init = function () {
     })
     this._drawNodes.push(startButtonNode)
     const startButtonTextNode = framework.createNode({
-        res: "Start Game", x: startButtonNode.x, y: startButtonNode.y,
+        res: "Start Game", x: startButtonNode.x, y: startButtonNode.y + 37,
         type: "text", fontSize: 52, fontFamily: "Georgia"
     })
     this._drawNodes.push(startButtonTextNode)
@@ -1118,7 +1118,7 @@ async function gameStart(canvasElement, canvasContext, loadResources) {
 
     const resources = await loadResources("res/tetris.png", true)
     GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
-    GameWorldManager.setWorldSize(1080, 1920)
+    GameWorldManager.setWorldSize(960, 1706)
     GameScreenClick.activityClick()
     framework.run(resources)
     const loadings = document.body.getElementsByClassName("loading")
