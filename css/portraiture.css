@@ -21,7 +21,6 @@ canvas{
 .canvas-panel .canvas-container {
     width: 100vw;
     height: 100vh;
-    background-color: gainsboro;
 }
 
 .canvas-panel .canvas-container canvas {
@@ -29,7 +28,6 @@ canvas{
     width: 56.25vw;
     left: 21.875vw;
     position: absolute;
-    background-color: gray;
     top: calc((100vh - 56.25vw) / 2 - 21.875vw);
 
     transform: rotate(-90deg);
