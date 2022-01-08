@@ -53,7 +53,8 @@ window.GameScreenClick = (() => {
     GameScreenClick.removeClickItem = function (clickId) {
         let move = false
         for (let i = 0; i < list.length; i++) {
-            if (list[i].id === clickId) {
+            const item = list[i]()
+            if (item.clickId === clickId) {
                 list[i] = undefined
                 move = true
             }
