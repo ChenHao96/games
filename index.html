@@ -2,30 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Canvas 画布</title>
+    <title>Steven Canvas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
     <link rel="shortcut icon" type="image/x-icon" id="faviconIco" href="favicon.ico"/>
+    <script src="plugs/GameNode.js"></script>
     <script src="plugs/GameAudioManager.js"></script>
     <script src="plugs/GameWorldManager.js"></script>
     <script src="plugs/GameScreenClick.js"></script>
     <script src="plugs/GameDrawManager.js"></script>
-    <!--    <script src="plugs/PictureUtil.js"></script>-->
-    <!--    <script src="plugs/framework.js"></script>-->
-    <!--    <script src="plugs/framework-physics.js"></script>-->
 </head>
 <body>
-<script type="text/javascript">
-    (function () {
-        GameWorldManager.setDirection(GameWorldManager.Direction.landscape)
-        GameWorldManager.setWorldSize(1920, 1080)
-        const canvas = document.getElementById(GameWorldManager.getCanvasId())
-        GameScreenClick.setActivityCanvas(canvas)
-        GameScreenClick.addClickItem(0, 0, 300, 300)
-        GameDrawManager.pushScene(new GameScene())
-        GameDrawManager.run(canvas)
-    })()
-</script>
-<!--<script src="js/app.js"></script>-->
-<!--<script src="js/index.js"></script>-->
+<script src="js/app.js"></script>
 </body>
 </html>

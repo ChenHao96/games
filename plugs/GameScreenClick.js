@@ -25,13 +25,13 @@ window.GameScreenClick = (() => {
                     position.x = x / bbox.height * canvas.width
                     position.y = y / bbox.width * canvas.height
                 }
-                break;
+                break
             case "landscape":// 横屏
                 if (bbox.height >= bbox.width) {
                     position.x = x / bbox.height * canvas.width
                     position.y = y / bbox.width * canvas.height
                 }
-                break;
+                break
         }
         if (position.x >= item.beginX && position.x <= item.endX) {
             if (position.y >= item.beginY && position.y <= item.endY) {
@@ -52,78 +52,77 @@ window.GameScreenClick = (() => {
         list.length = 0
     }
     const mobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    GameScreenClick.setActivityCanvas = function (canvas) {
-        if (canvas && HTMLCanvasElement === canvas.constructor) {
-            canvas.onmouseleave = () => {
-                canvas.style.cursor = ""
-            }
-            let lastHovered = undefined
-            canvas.onmousemove = (e) => {
-                canvas.style.cursor = ""
-                for (let i = 0; i < list.length; i++) {
-                    const item = list[i]
-                    if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                        if (!mobileDevice) {
-                            canvas.style.cursor = "pointer"
-                            if (item.id !== lastHovered) {
-                                lastHovered = item.id
-                                window.dispatchEvent(new CustomEvent('GameScreenClick', {
-                                    detail: {
-                                        type: "hovered",
-                                        id: item.id
-                                    }
-                                }))
-                            }
-                        }
-                    }else{
-                        if(lastHovered === item.id){
+    GameScreenClick.activityClick = function () {
+        const canvas = GameWorldManager.getWorldCanvas()
+        canvas.onmouseleave = () => {
+            canvas.style.cursor = ""
+        }
+        let lastHovered = undefined
+        canvas.onmousemove = (e) => {
+            canvas.style.cursor = ""
+            for (let i = 0; i < list.length; i++) {
+                const item = list[i]
+                if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
+                    if (!mobileDevice) {
+                        canvas.style.cursor = "pointer"
+                        if (item.id !== lastHovered) {
+                            lastHovered = item.id
                             window.dispatchEvent(new CustomEvent('GameScreenClick', {
                                 detail: {
-                                    type: "leaved",
+                                    type: "hovered",
                                     id: item.id
                                 }
                             }))
                         }
-                        lastHovered = undefined
                     }
+                } else {
+                    if (lastHovered === item.id) {
+                        window.dispatchEvent(new CustomEvent('GameScreenClick', {
+                            detail: {
+                                type: "leaved",
+                                id: item.id
+                            }
+                        }))
+                    }
+                    lastHovered = undefined
                 }
             }
-            let mouseDown = false
-            canvas.onmousedown = (e) => {
+        }
+        let mouseDown = false
+        canvas.onmousedown = (e) => {
+            for (let i = 0; i < list.length; i++) {
+                const item = list[i]
+                if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
+                    mouseDown = true
+                    window.dispatchEvent(new CustomEvent('GameScreenClick', {
+                        detail: {
+                            type: "clickDown",
+                            id: item.id
+                        }
+                    }))
+                }
+            }
+        }
+        canvas.onmouseup = (e) => {
+            if (mouseDown) {
                 for (let i = 0; i < list.length; i++) {
                     const item = list[i]
                     if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                        mouseDown = true
                         window.dispatchEvent(new CustomEvent('GameScreenClick', {
                             detail: {
-                                type: "clickDown",
+                                type: "clicked",
                                 id: item.id
                             }
                         }))
                     }
-                }
-            }
-            canvas.onmouseup = (e) => {
-                if (mouseDown) {
-                    for (let i = 0; i < list.length; i++) {
-                        const item = list[i]
-                        if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                            window.dispatchEvent(new CustomEvent('GameScreenClick', {
-                                detail: {
-                                    type: "clicked",
-                                    id: item.id
-                                }
-                            }))
+                    window.dispatchEvent(new CustomEvent('GameScreenClick', {
+                        detail: {
+                            type: "clickLeave",
+                            id: item.id
                         }
-                        window.dispatchEvent(new CustomEvent('GameScreenClick', {
-                            detail: {
-                                type: "clickLeave",
-                                id: item.id
-                            }
-                        }))
-                    }
-                    mouseDown = false
+                    }))
                 }
+                mouseDown = false
             }
         }
     }

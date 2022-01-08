@@ -1,23 +1,5 @@
 window.GameWorldManager = (() => {
-    const GameWorldManager = {
-        Direction: {
-            landscape: "landscape",
-            portraiture: "portraiture"
-        }
-    }
-    let canvasId = "game-canvas"
-    GameWorldManager.getCanvasId = function () {
-        return canvasId
-    }
-    GameWorldManager.setCanvasId = function (id) {
-        if (typeof id === "string" && id.length > 0) {
-            const canvasElement = document.getElementById(canvasId)
-            if (canvasElement) {
-                canvasElement.id = id
-            }
-            canvasId = id
-        }
-    }
+    const GameWorldManager = {Direction: {landscape: "landscape", portraiture: "portraiture"}}
     const margin = {top: 0, left: 0}
     GameWorldManager.getMargin = function () {
         return {top: margin.top, left: margin.left}
@@ -31,16 +13,14 @@ window.GameWorldManager = (() => {
             worldDirection = direction
             let orientationCss = document.getElementById("CanvasOrientation")
             if (null === orientationCss || undefined === orientationCss) {
-                orientationCss = document.createElement("link")
+                orientationCss = document.createElement("style")
                 orientationCss.id = "CanvasOrientation"
-                orientationCss.type = "text/css"
-                orientationCss.rel = "stylesheet"
                 document.head.appendChild(orientationCss)
             }
             if (GameWorldManager.Direction.portraiture === worldDirection) {
-                orientationCss.href = "css/portraiture.css"
+                orientationCss.innerHTML = "*{border:0;padding:0;margin:0;}canvas{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}.audio-controls{top:0;right:0;z-index:-1;position:absolute;}.canvas-panel .canvas-container{width:100vw;height:100vh;}.canvas-panel .canvas-container canvas{height:100vw;width:56.25vw;left:21.875vw;position:absolute;top:calc((100vh - 56.25vw) / 2 - 21.875vw);transform:rotate(-90deg);-o-transform:rotate(-90deg);-ms-transform:rotate(-90deg);-moz-transform:rotate(-90deg);-webkit-transform:rotate(-90deg);}@media only screen and (min-width:177.778vh){.canvas-panel .canvas-container canvas{width:100vh;top:-38.889vh;height:177.778vh;left:calc((100vw - 177.778vh) / 2 + 38.889vh);}}@media only screen and (orientation:portrait){.canvas-panel{display:flex;justify-content:center;}.canvas-panel .canvas-container{display:flex;align-items:center;}.canvas-panel .canvas-container canvas{margin:auto;transform:none;position:initial;width:56.25vh;height:100vh;max-width:100vw;max-height:177.778vw;}}"
             } else if (GameWorldManager.Direction.landscape === worldDirection) {
-                orientationCss.href = "css/landscape.css"
+                orientationCss.innerHTML = "*{border:0;padding:0;margin:0;}canvas{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}.audio-controls{top:0;right:0;z-index:-1;position:absolute;}.canvas-panel{display:flex;justify-content:center;}.canvas-panel .canvas-container{width:100vw;height:100vh;display:flex;align-items:center;}.canvas-panel .canvas-container canvas{margin:auto;width:100vw;height:56.25vw;max-height:100vh;max-width:177.778vh;}@media only screen and (orientation:portrait){.canvas-panel .canvas-container canvas{height:100vw;left:-38.889vw;width:177.778vw;position:absolute;top:calc((100vh - 177.778vw) / 2 + 38.889vw);transform:rotate(90deg);-ms-transform:rotate(90deg);-moz-transform:rotate(90deg);-webkit-transform:rotate(90deg);-o-transform:rotate(90deg);}@media only screen and (max-height:177.778vw){.canvas-panel .canvas-container canvas{width:100vh;top:21.875vh;height:56.25vh;left:calc((100vw - 56.25vh) / 2 - 21.875vh);}}}"
             }
             if (fistSetSize) {
                 GameWorldManager.setWorldSize(worldWidth, worldHeight)
@@ -50,6 +30,22 @@ window.GameWorldManager = (() => {
     let worldWidth = 0, worldHeight = 0
     GameWorldManager.getWorldSize = function () {
         return {width: worldWidth, height: worldHeight}
+    }
+    let canvasElement = undefined
+    GameWorldManager.getWorldCanvas = function () {
+        if (undefined === canvasElement) {
+            if (document.body.className) {
+                document.body.className += " canvas-panel"
+            } else {
+                document.body.className = "canvas-panel"
+            }
+            const canvasContainer = document.createElement("div")
+            canvasContainer.className = "canvas-container"
+            canvasElement = document.createElement("canvas")
+            canvasContainer.appendChild(canvasElement)
+            document.body.appendChild(canvasContainer)
+        }
+        return canvasElement
     }
     GameWorldManager.setWorldSize = function (width, height) {
         worldWidth = Math.floor(Math.abs(width))
@@ -75,22 +71,8 @@ window.GameWorldManager = (() => {
             margin.top = Math.floor(h / 2)
             margin.left = 0
         }
-        let canvasElement = document.getElementById(canvasId)
-        if (undefined === canvasElement || null === canvasElement) {
-            if (document.body.className) {
-                document.body.className += " canvas-panel"
-            } else {
-                document.body.className = "canvas-panel"
-            }
-            const canvasContainer = document.createElement("div")
-            canvasContainer.className = "canvas-container"
-            canvasElement = document.createElement("canvas")
-            canvasElement.id = canvasId
-            canvasContainer.appendChild(canvasElement)
-            document.body.appendChild(canvasContainer)
-        }
-        canvasElement.width = canvasWidth
-        canvasElement.height = canvasHeight
+        GameWorldManager.getWorldCanvas().width = canvasWidth
+        GameWorldManager.getWorldCanvas().height = canvasHeight
     }
     return GameWorldManager
 })()
