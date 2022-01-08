@@ -114,7 +114,7 @@ const GamePosition = ((_super) => {
 
     function GamePosition() {
         const _this = _super.call(this) || this
-        _this.position = {x: 0, y: 0}
+        this.position = {x: 0, y: 0}
         return _this
     }
 
@@ -122,16 +122,18 @@ const GamePosition = ((_super) => {
         return this.position.x
     }
     GamePosition.prototype.setX = function (x) {
-        if (x && typeof x === "number") {
+        if (typeof x === "number") {
             this.position.x = x
+            this.x = x
         }
     }
     GamePosition.prototype.getY = function () {
         return this.position.y
     }
     GamePosition.prototype.setY = function (y) {
-        if (y && typeof y === "number") {
+        if (typeof y === "number") {
             this.position.y = y
+            this.y = y
         }
     }
     GamePosition.prototype.getPosition = function () {
@@ -140,18 +142,9 @@ const GamePosition = ((_super) => {
             y: this.position.y
         }
     }
-    GamePosition.prototype.setPosition = function (position, y) {
-        if (position && typeof position === "number") {
-            this.position.x = position
-            if (y && typeof y === "number") {
-                this.position.y = y
-            } else {
-                this.position.y = position
-            }
-        } else {
-            this.position.x = position.x
-            this.position.y = position.y
-        }
+    GamePosition.prototype.setPosition = function (x, y) {
+        this.setX(x)
+        this.setY(y)
     }
     return GamePosition
 })(GameScene)
@@ -198,22 +191,22 @@ const Color = (() => {
     }
 
     Color.prototype.setRed = function (red) {
-        if (red && typeof red === "number") {
+        if (typeof red === "number") {
             this.red = Math.abs(red) % 256
         }
     }
     Color.prototype.setGreen = function (green) {
-        if (green && typeof green === "number") {
+        if (typeof green === "number") {
             this.green = Math.abs(green) % 256
         }
     }
     Color.prototype.setBlue = function (blue) {
-        if (blue && typeof blue === "number") {
+        if (typeof blue === "number") {
             this.blue = Math.abs(blue) % 256
         }
     }
     Color.prototype.setAlpha = function (alpha) {
-        if (alpha && typeof alpha === "number") {
+        if (typeof alpha === "number") {
             this.alpha = (Math.abs(alpha) % 256) / 255
         }
     }
@@ -248,7 +241,7 @@ const ImageLayout = ((_super) => {
 
     function ImageLayout(src) {
         const _this = _super.call(this) || this
-        _this.setSrc(src)
+        this.setSrc(src)
         return _this
     }
 
@@ -283,11 +276,11 @@ const TextSprite = ((_super) => {
 
     function TextSprite(text) {
         const _this = _super.call(this) || this
-        _this._fontSize = 64
-        _this._fillStyle = "#000"
-        _this._fontWeight = "bold"
-        _this._fontFamily = "Georgia"
-        _this.setText(text)
+        this._fontSize = 64
+        this._fillStyle = "#000"
+        this._fontWeight = "bold"
+        this._fontFamily = "Georgia"
+        this.setText(text)
         return _this
     }
 
@@ -313,7 +306,7 @@ const TextSprite = ((_super) => {
         return this._fontSize
     }
     TextSprite.prototype.setFontSize = function (value) {
-        if (value && typeof value === "number") {
+        if (typeof value === "number") {
             this._fontSize = value
             this._calculateViewSize()
         }
@@ -358,7 +351,7 @@ const ImageSprite = ((_super) => {
 
     function ImageSprite(src) {
         const _this = _super.call(this) || this
-        _this.setSrc(src)
+        this.setSrc(src)
         return _this
     }
 
