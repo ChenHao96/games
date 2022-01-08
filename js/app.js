@@ -1,14 +1,3 @@
-async function gameStart(canvasElement, canvasContext, loadResources) {
-
-    const resources = await loadResources("res/tetris.png", true)
-    await framework.run(canvasElement, canvasContext, resources)
-    framework.pushScene(new Application())
-
-    const img = resources["favicon.ico"]
-    img.alt = "俄罗斯方块-欣欣专享"
-    return resources
-}
-
 function Application() {
     this.destroy()
 }
@@ -1054,3 +1043,29 @@ Cube.prototype.cubeCrossY = function (y) {
     const value = this.currentArrayCube(0, y, this.rotate)
     return this.item.moveY_XOR[this.rotate] !== value
 }
+
+async function gameStart(canvasElement, canvasContext, loadResources) {
+
+    const resources = await loadResources("res/tetris.png", true)
+    await framework.run(canvasElement, canvasContext, resources)
+    framework.pushScene(new Application())
+
+    const img = resources["favicon.ico"]
+    img.alt = "俄罗斯方块-欣欣专享"
+    return resources
+}
+
+(function () {
+    GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
+    GameWorldManager.setWorldSize(1080, 1920)
+    GameScreenClick.activityClick()
+    // framework.pushScene(new Application())
+    // framework.run()
+
+    const loadings = document.body.getElementsByClassName("loading")
+    if (loadings && loadings.length > 0) {
+        for (let i = 0; i < loadings.length; i++) {
+            document.body.removeChild(loadings[i])
+        }
+    }
+})()
