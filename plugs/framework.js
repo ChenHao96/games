@@ -1,18 +1,6 @@
 const framework = {
     _uuid: 0,
-    _volume: 1,
-    _resources: {},
-    _direction: null
-}
-framework.getDirection = () => {
-    if (null === framework._direction) {
-        const linkElement = document.getElementById("CanvasOrientation")
-        let orientation = linkElement.href
-        orientation = orientation.substring(orientation.lastIndexOf("/") + 1)
-        orientation = orientation.substring(0, orientation.lastIndexOf("."))
-        framework._direction = orientation
-    }
-    return framework._direction
+    _resources: {}
 }
 framework.getMuted = () => {
     return GameAudioManager.getMuted()
@@ -31,9 +19,8 @@ framework.playEffect = (url, loop) => {
         GameAudioManager.playSoundEffect(url)
     }
 }
-
 framework.getWorldSize = () => {
-    return {width: framework._canvasElement.width, height: framework._canvasElement.height}
+    return GameWorldManager.getWorldSize()
 }
 
 framework.pushScene = async (scene) => {
@@ -270,73 +257,73 @@ framework.run = (canvasElement, canvasContext, resources) => {
             framework._runnableId = setTimeout(timeoutFunc, timeout)
         }, fps)
 
-        const direction = framework.getDirection()
-
-        function getPointOnCanvas(canvas, x, y, item) {
-            const bbox = canvas.getBoundingClientRect()
-            const position = {
-                x: x / bbox.width * canvas.width,
-                y: y / bbox.height * canvas.height
-            }
-            switch (direction) {
-                case "portraiture":// 竖屏
-                    if (bbox.width >= bbox.height) {
-                        position.x = x / bbox.height * canvas.width
-                        position.y = y / bbox.width * canvas.height
-                    }
-                    break;
-                default:// 横屏
-                    if (bbox.height >= bbox.width) {
-                        position.x = x / bbox.height * canvas.width
-                        position.y = y / bbox.width * canvas.height
-                    }
-                    break;
-            }
-            if (position.x >= item.beginX && position.x <= item.endX) {
-                if (position.y >= item.beginY && position.y <= item.endY) {
-                    return true
-                }
-            }
-            return false
-        }
-
-        let mouseDown = false
-        framework._canvasElement.onmousedown = function (e) {
-            for (let field in buttons) {
-                const item = buttons[field]
-                if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                    mouseDown = true
-                    item._target.onMouseDown()
-                }
-            }
-        }
-        framework._canvasElement.onmouseup = function (e) {
-            for (let field in buttons) {
-                const item = buttons[field]
-                if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                    if (mouseDown) {
-                        framework.playEffect("res/click")
-                        item._target.onClick()
-                    }
-                }
-                item._target.onMouseUp()
-            }
-            mouseDown = false
-        }
-        framework._canvasElement.onmouseleave = () => {
-            framework._canvasElement.style.cursor = ""
-        }
-        framework._canvasElement.onmousemove = function (e) {
-            framework._canvasElement.style.cursor = ""
-            for (let field in buttons) {
-                const item = buttons[field]
-                if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                    if (!window._js_binding.isMobileDevice()) {
-                        framework._canvasElement.style.cursor = "pointer"
-                    }
-                }
-            }
-        }
+        // const direction = framework.getDirection()
+        //
+        // function getPointOnCanvas(canvas, x, y, item) {
+        //     const bbox = canvas.getBoundingClientRect()
+        //     const position = {
+        //         x: x / bbox.width * canvas.width,
+        //         y: y / bbox.height * canvas.height
+        //     }
+        //     switch (direction) {
+        //         case "portraiture":// 竖屏
+        //             if (bbox.width >= bbox.height) {
+        //                 position.x = x / bbox.height * canvas.width
+        //                 position.y = y / bbox.width * canvas.height
+        //             }
+        //             break;
+        //         default:// 横屏
+        //             if (bbox.height >= bbox.width) {
+        //                 position.x = x / bbox.height * canvas.width
+        //                 position.y = y / bbox.width * canvas.height
+        //             }
+        //             break;
+        //     }
+        //     if (position.x >= item.beginX && position.x <= item.endX) {
+        //         if (position.y >= item.beginY && position.y <= item.endY) {
+        //             return true
+        //         }
+        //     }
+        //     return false
+        // }
+        //
+        // let mouseDown = false
+        // framework._canvasElement.onmousedown = function (e) {
+        //     for (let field in buttons) {
+        //         const item = buttons[field]
+        //         if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
+        //             mouseDown = true
+        //             item._target.onMouseDown()
+        //         }
+        //     }
+        // }
+        // framework._canvasElement.onmouseup = function (e) {
+        //     for (let field in buttons) {
+        //         const item = buttons[field]
+        //         if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
+        //             if (mouseDown) {
+        //                 framework.playEffect("res/click")
+        //                 item._target.onClick()
+        //             }
+        //         }
+        //         item._target.onMouseUp()
+        //     }
+        //     mouseDown = false
+        // }
+        // framework._canvasElement.onmouseleave = () => {
+        //     framework._canvasElement.style.cursor = ""
+        // }
+        // framework._canvasElement.onmousemove = function (e) {
+        //     framework._canvasElement.style.cursor = ""
+        //     for (let field in buttons) {
+        //         const item = buttons[field]
+        //         if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
+        //             if (!window._js_binding.isMobileDevice()) {
+        //                 framework._canvasElement.style.cursor = "pointer"
+        //             }
+        //         }
+        //     }
+        // }
         resolve(framework)
     })
 }

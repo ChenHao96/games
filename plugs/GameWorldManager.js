@@ -5,7 +5,24 @@ window.GameWorldManager = (() => {
             portraiture: "portraiture"
         }
     }
-    let worldDirection = "unknown"
+    let canvasId = "game-canvas"
+    GameWorldManager.getCanvasId = function () {
+        return canvasId
+    }
+    GameWorldManager.setCanvasId = function (id) {
+        if (typeof id === "string" && id.length > 0) {
+            const canvasElement = document.getElementById(canvasId)
+            if (canvasElement) {
+                canvasElement.id = id
+            }
+            canvasId = id
+        }
+    }
+    const margin = {top: 0, left: 0}
+    GameWorldManager.getMargin = function () {
+        return {top: margin.top, left: margin.left}
+    }
+    let worldDirection = "unknown", fistSetSize = false
     GameWorldManager.getDirection = function () {
         return worldDirection
     }
@@ -25,24 +42,10 @@ window.GameWorldManager = (() => {
             } else if (GameWorldManager.Direction.landscape === worldDirection) {
                 orientationCss.href = "css/landscape.css"
             }
-        }
-    }
-    let canvasId = "game-canvas"
-    GameWorldManager.getCanvasId = function () {
-        return canvasId
-    }
-    GameWorldManager.setCanvasId = function (id) {
-        if (typeof id === "string" && id.length > 0) {
-            const canvasElement = document.getElementById(canvasId)
-            if (canvasElement) {
-                canvasElement.id = id
+            if (fistSetSize) {
+                GameWorldManager.setWorldSize(worldWidth, worldHeight)
             }
-            canvasId = id
         }
-    }
-    const margin = {top: 0, left: 0}
-    GameWorldManager.getMargin = function () {
-        return {top: margin.top, left: margin.left}
     }
     let worldWidth = 0, worldHeight = 0
     GameWorldManager.getWorldSize = function () {
@@ -51,6 +54,7 @@ window.GameWorldManager = (() => {
     GameWorldManager.setWorldSize = function (width, height) {
         worldWidth = Math.floor(Math.abs(width))
         worldHeight = Math.floor(Math.abs(height))
+        fistSetSize = true
         let canvasWidth, canvasHeight, hScale = 0, wScale = 0
         if (GameWorldManager.Direction.portraiture === worldDirection) {
             hScale = 1920 * (worldWidth / 1080)
