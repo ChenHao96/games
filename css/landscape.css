@@ -28,7 +28,6 @@ canvas{
     height: 100vh;
     display: flex;
     align-items: center;
-    background-color: gainsboro;
 }
 
 .canvas-panel .canvas-container canvas {
@@ -37,7 +36,6 @@ canvas{
     height: 56.25vw;
     max-height: 100vh;
     max-width: 177.778vh;
-    background-color: gray;
 }
 
 @media only screen and (orientation: portrait) {
