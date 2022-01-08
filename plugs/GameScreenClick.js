@@ -1,25 +1,9 @@
 window.GameScreenClick = (() => {
     const GameScreenClick = {}
-    let gameDirection = undefined
-    const getDirection = () => {
-        if (gameDirection) {
-            return gameDirection
-        }
-        const orientationCss = document.getElementById("CanvasOrientation")
-        if (orientationCss) {
-            let direction = orientationCss.href
-            direction = direction.substring(direction.lastIndexOf("/"))
-            direction = direction.substring(0, direction.indexOf("."))
-            gameDirection = direction
-        } else {
-            gameDirection = "unknown"
-        }
-        return gameDirection
-    }
     const getPointOnCanvas = (canvas, x, y, item) => {
         const bbox = canvas.getBoundingClientRect()
         const position = {x: x / bbox.width * canvas.width, y: y / bbox.height * canvas.height}
-        switch (getDirection()) {
+        switch (GameWorldManager.getDirection()) {
             case "portraiture":// 竖屏
                 if (bbox.width >= bbox.height) {
                     position.x = x / bbox.height * canvas.width
@@ -32,6 +16,8 @@ window.GameScreenClick = (() => {
                     position.y = y / bbox.width * canvas.height
                 }
                 break
+            default:
+                return false
         }
         if (position.x >= item.beginX && position.x <= item.endX) {
             if (position.y >= item.beginY && position.y <= item.endY) {
