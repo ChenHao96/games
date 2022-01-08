@@ -32,7 +32,7 @@ Application.prototype.before = function () {
     const img = framework._resources["favicon.ico"]
     GameDrawManager.setTitle("俄罗斯方块-欣欣专享")
     GameDrawManager.setFavicon(img.src)
-    // framework.playEffect("res/soundtrack", true)
+    framework.playEffect("res/soundtrack", true)
 }
 Application.prototype.init = function () {
     if (this._initialized_) {
