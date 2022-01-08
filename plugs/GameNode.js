@@ -5,7 +5,7 @@ const __extends = (function () {
                 d.__proto__ = b
             }) ||
             function (d, b) {
-                for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]
+                for (let p in b) if (b.hasOwnProperty(p)) d[p] = b[p]
             }
         return extendStatics(d, b)
     }
@@ -26,6 +26,8 @@ const GameScene = (() => {
         this._init = () => {
         }
         this._runBefore = () => {
+        }
+        this.destroy = () => {
         }
         this.update = (deltaTime) => {
         }
@@ -362,8 +364,10 @@ const ImageSprite = ((_super) => {
                 this._image = new Image()
             }
             this._image.src = src
-            this.setWidth(this._image.width)
-            this.setHeight(this._image.height)
+            this._image.onload = () => {
+                this.setWidth(this._image.width)
+                this.setHeight(this._image.height)
+            }
         }
     }
     ImageSprite.prototype._drawPicture = function (canvasContext, x, y) {
@@ -373,8 +377,76 @@ const ImageSprite = ((_super) => {
     }
     return ImageSprite
 })(GameSprite)
+const Button = ((_super) => {
+    __extends(Button, _super)
 
+    function Button() {
+        const _this = _super.call(this) || this
+        this._destroy = () => {
+        }
+        this.clickUp = () => {
+        }
+        this.clicked = () => {
+        }
+        this.clickDown = () => {
+        }
+        this.hovered = () => {
+        }
+        this.leaved = () => {
+        }
+        this.setWidth(0)
+        this.setHeight(0)
+        return _this
+    }
 
+    Button.prototype.destroy = function () {
+        console.log("button destroy")
+        GameScreenClick.removeClickItem(this.clickId)
+        window.addEventListener("GameScreenClick", this.eventListener, false)
+        this._destroy()
+    }
+    Button.prototype.setScreenClickId = function (clickId) {
+        if (clickId && typeof clickId === "number") {
+            this.clickId = clickId
+            this.eventListener = ({detail}) => {
+                if (this.clickId === detail.id) {
+                    switch (detail.type) {
+                        case "clickDown":
+                            this.clickDown()
+                            break;
+                        case "clickUp":
+                            this.clickUp()
+                            break;
+                        case "clicked":
+                            this.clicked()
+                            break;
+                        case "hovered":
+                            this.hovered()
+                            break;
+                        case "leaved":
+                            this.leaved()
+                            break;
+                    }
+                }
+            }
+            window.addEventListener("GameScreenClick", this.eventListener, false)
+        }
+    }
+    Button.prototype.getButtonMovePosition = function () {
+        const px = this.parent.getX(), py = this.parent.getY()
+        const ppx = this.parent.parent.getWidth() / 2, ppy = this.parent.parent.getHeight() / 2
+        const dx = this.getX() + px + ppx - this.getWidth() / 2, dy = this.getY() + py + ppy - this.getHeight() / 2
+        const margin = GameWorldManager.getMargin()
+        return {
+            beginX: dx + margin.left,
+            beginY: dy + margin.top,
+            endX: dx + margin.left + this.getWidth(),
+            endY: dy + margin.top + this.getHeight(),
+            clickId: this.clickId
+        }
+    }
+    return Button
+})(GameSprite)
 const SwitchSprite = ((_super) => {
     __extends(SwitchSprite, _super)
 
@@ -386,17 +458,11 @@ const SwitchSprite = ((_super) => {
         return _this
     }
 
-    SwitchSprite.prototype.setScreenClickId = function (clickId) {
-        if (clickId && typeof clickId === "number") {
-            window.addEventListener("GameScreenClick", function ({detail}) {
-                if (clickId === detail.id) {
-                    console.log(detail)
-                }
-            }, false)
-        }
+    SwitchSprite.prototype.clicked = function () {
+        this._switch_ = !this._switch_
     }
     SwitchSprite.prototype.setSwitch = function (value) {
-        this._switch_ = value || value === "true" || value === "TRUE"
+        this._switch_ = true === value || value === "true" || value === "TRUE"
     }
     SwitchSprite.prototype.setOpenSrc = function (src) {
         if (src && typeof src === "string") {
@@ -404,6 +470,10 @@ const SwitchSprite = ((_super) => {
                 this._openImage = new Image()
             }
             this._openImage.src = src
+            this._openImage.onload = () => {
+                this.setWidth(this._openImage.width)
+                this.setHeight(this._openImage.height)
+            }
         }
     }
     SwitchSprite.prototype.setCloseSrc = function (src) {
@@ -415,26 +485,64 @@ const SwitchSprite = ((_super) => {
         }
     }
     SwitchSprite.prototype._drawPicture = function (canvasContext, x, y) {
-        if (this._switch_) {
-            canvasContext.drawImage(this._image, x, y, this.getWidth(), this.getHeight())
-        } else {
-
+        const image = this._switch_ ? this._openImage : this._closeImage
+        if (image) {
+            canvasContext.drawImage(image, x, y, this.getWidth(), this.getHeight())
         }
     }
-    SwitchSprite.prototype.getButtonMovePosition = function () {
-        // TODO:
-    }
     return SwitchSprite
-})(GameSprite)
+})(Button)
 const ButtonSprite = ((_super) => {
     __extends(ButtonSprite, _super)
 
-    function ButtonSprite() {
-        return _super.apply(this, arguments) || this
+    function ButtonSprite(notClick, clicked, process) {
+        const _this = _super.call(this) || this
+        this.setNotClick(notClick)
+        this.setClicked(clicked)
+        this._image = undefined
+        if (process && typeof process === "function") {
+            this._process = process
+        } else {
+            this._process = () => {
+            }
+        }
+        return _this
     }
 
-    ButtonSprite.prototype.getButtonMovePosition = function () {
-        // TODO:
+    ButtonSprite.prototype.setNotClick = function (notClick) {
+        if (notClick && typeof notClick === "string") {
+            if (undefined === this._notClick) {
+                this._notClick = new Image()
+            }
+            this._notClick.src = src
+            this._notClick.onload = () => {
+                this.setWidth(this._notClick.width)
+                this.setHeight(this._notClick.height)
+            }
+        }
+    }
+    ButtonSprite.prototype.setClicked = function (clicked) {
+        if (clicked && typeof clicked === "string") {
+            if (undefined === this._clicked) {
+                this._clicked = new Image()
+            }
+            this._clicked.src = src
+        }
+    }
+    ButtonSprite.prototype.clickUp = function () {
+        this._image = this._notClick
+    }
+    ButtonSprite.prototype.clicked = function () {
+        this._image = this._notClick
+        this._process()
+    }
+    ButtonSprite.prototype.clickDown = function () {
+        this._image = this._clicked
+    }
+    ButtonSprite.prototype._drawPicture = function (canvasContext, x, y) {
+        if (this._image) {
+            canvasContext.drawImage(this._image, x, y, this.getWidth(), this.getHeight())
+        }
     }
     return ButtonSprite
-})(GameSprite)
+})(Button)

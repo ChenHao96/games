@@ -41,18 +41,30 @@ window.GameScreenClick = (() => {
         return false
     }
     let clickId = 0
-    const list = [], listFuncMap = {}
+    const list = []
+    GameScreenClick.clearClicks = function () {
+        list.length = 0
+    }
     GameScreenClick.addClickItem = function (postFunc) {
         const id = ++clickId
         list.push(postFunc)
-        listFuncMap[postFunc] = id
         return id
     }
-    GameScreenClick.removeClickItem = function (postFunc) {
-        // TODO: 移除检测
-    }
-    GameScreenClick.clearClicks = function () {
-        list.length = 0
+    GameScreenClick.removeClickItem = function (clickId) {
+        let move = false
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].id === clickId) {
+                list[i] = undefined
+                move = true
+            }
+            if (move) {
+                if (i <= list.length - 2) {
+                    list[i] = list[i + 1]
+                } else {
+                    list.length -= 1
+                }
+            }
+        }
     }
     const mobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     GameScreenClick.activityClick = function () {
@@ -64,8 +76,7 @@ window.GameScreenClick = (() => {
         canvas.onmousemove = (e) => {
             canvas.style.cursor = ""
             for (let i = 0; i < list.length; i++) {
-                const func = list[i]
-                const item = func(), itemId = listFuncMap[func]
+                const item = list[i](), itemId = item.clickId
                 if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
                     if (!mobileDevice) {
                         canvas.style.cursor = "pointer"
@@ -87,18 +98,18 @@ window.GameScreenClick = (() => {
                                 id: itemId
                             }
                         }))
+                        lastHovered = undefined
                     }
-                    lastHovered = undefined
                 }
             }
         }
-        let mouseDown = false
+        let mouseDown = false, lastClickId = undefined
         canvas.onmousedown = (e) => {
             for (let i = 0; i < list.length; i++) {
-                const func = list[i]
-                const item = func(), itemId = listFuncMap[func]
+                const item = list[i](), itemId = item.clickId
                 if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
                     mouseDown = true
+                    lastClickId = itemId
                     window.dispatchEvent(new CustomEvent('GameScreenClick', {
                         detail: {
                             type: "clickDown",
@@ -111,22 +122,23 @@ window.GameScreenClick = (() => {
         canvas.onmouseup = (e) => {
             if (mouseDown) {
                 for (let i = 0; i < list.length; i++) {
-                    const func = list[i]
-                    const item = func(), itemId = listFuncMap[func]
+                    const item = list[i](), itemId = item.clickId
                     if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
+                        if (itemId === lastClickId) {
+                            window.dispatchEvent(new CustomEvent('GameScreenClick', {
+                                detail: {
+                                    type: "clicked",
+                                    id: itemId
+                                }
+                            }))
+                        }
                         window.dispatchEvent(new CustomEvent('GameScreenClick', {
                             detail: {
-                                type: "clicked",
+                                type: "clickUp",
                                 id: itemId
                             }
                         }))
                     }
-                    window.dispatchEvent(new CustomEvent('GameScreenClick', {
-                        detail: {
-                            type: "clickLeave",
-                            id: itemId
-                        }
-                    }))
                 }
                 mouseDown = false
             }
