@@ -16,9 +16,11 @@ window.GameDrawManager = (() => {
     }
     const drawToCanvas = (canvasContext, deltaTime) => {
         console.log(deltaTime)
+
     }
     const scenes = []
     GameDrawManager.pushScene = (scene) => {
+        console.log(scene.constructor, scene instanceof GameScene)
         if (scene instanceof GameScene) {
             scenes.push(scene)
         }
