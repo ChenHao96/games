@@ -22,15 +22,7 @@ const __extends = (function () {
 const GameScene = (() => {
     function GameScene() {
         this.indexNode = {}
-
-        this._init = () => {
-        }
-        this._runBefore = () => {
-        }
-        this.destroy = () => {
-        }
-        this.update = (deltaTime) => {
-        }
+        this.scale = {width: 1, height: 1}
         return this
     }
 
@@ -50,6 +42,7 @@ const GameScene = (() => {
     }
     GameScene.prototype.runExit = function () {
         this.runBefored = false
+        this._runExit()
     }
     GameScene.prototype.addChild = function (child, index) {
         index = undefined === index ? 0 : index
@@ -92,7 +85,7 @@ const GameScene = (() => {
             }
             return 0
         }
-        return this.width
+        return this.width * this.scale.width
     }
     GameScene.prototype.getHeight = function () {
         if (undefined === this.height) {
@@ -101,13 +94,41 @@ const GameScene = (() => {
             }
             return 0
         }
-        return this.height
+        return this.height * this.scale.height
     }
     GameScene.prototype.setWidth = function (width) {
         this.width = Math.abs(width)
     }
     GameScene.prototype.setHeight = function (height) {
         this.height = Math.abs(height)
+    }
+    GameScene.prototype.getScale = function () {
+        return {
+            width: this.scale.width,
+            height: this.scale.height
+        }
+    }
+    GameScene.prototype.setScale = function (scale) {
+        if (typeof scale === 'number') {
+            this.scale.width = this.scale.height = scale
+        } else {
+            if (typeof scale.width === 'number') {
+                this.scale.width = scale.width
+            }
+            if (typeof scale.height === 'number') {
+                this.scale.height = scale.height
+            }
+        }
+    }
+    GameScene.prototype._init = function () {
+    }
+    GameScene.prototype._runBefore = function () {
+    }
+    GameScene.prototype._runExit = function () {
+    }
+    GameScene.prototype.destroy = function () {
+    }
+    GameScene.prototype.update = function (deltaTime) {
     }
     return GameScene
 })()
@@ -343,6 +364,7 @@ const TextSprite = ((_super) => {
     TextSprite.prototype._drawPicture = function (canvasContext, x, y) {
         if (this._text) {
             canvasContext.fillStyle = this.getFillStyle()
+            // TODO: scale
             canvasContext.font = this._fontSize + "px " + this._fontWeight + " " + this._fontFamily
             canvasContext.fillText(this._text, x, y)
         }
@@ -382,54 +404,57 @@ const Button = ((_super) => {
 
     function Button() {
         const _this = _super.call(this) || this
-        this._destroy = () => {
-        }
-        this.clickUp = () => {
-        }
-        this.clicked = () => {
-        }
-        this.clickDown = () => {
-        }
-        this.hovered = () => {
-        }
-        this.leaved = () => {
-        }
         this.setWidth(0)
         this.setHeight(0)
         return _this
     }
 
-    Button.prototype.destroy = function () {
-        console.log("button destroy")
+    Button.prototype.clickUp = function () {
+
+    }
+    Button.prototype.clickDown = function () {
+
+    }
+    Button.prototype.clicked = function () {
+
+    }
+    Button.prototype.hovered = function () {
+
+    }
+    Button.prototype.leaved = function () {
+
+    }
+    Button.prototype._runBefore = function () {
+        this.eventListener = ({detail}) => {
+            if (this.clickId === detail.id) {
+                switch (detail.type) {
+                    case "clickDown":
+                        this.clickDown()
+                        break;
+                    case "clickUp":
+                        this.clickUp()
+                        break;
+                    case "clicked":
+                        this.clicked()
+                        break;
+                    case "hovered":
+                        this.hovered()
+                        break;
+                    case "leaved":
+                        this.leaved()
+                        break;
+                }
+            }
+        }
+        window.addEventListener("GameScreenClick", this.eventListener, false)
+    }
+    Button.prototype._runExit = function () {
         GameScreenClick.removeClickItem(this.clickId)
         window.addEventListener("GameScreenClick", this.eventListener, false)
-        this._destroy()
     }
     Button.prototype.setScreenClickId = function (clickId) {
         if (clickId && typeof clickId === "number") {
             this.clickId = clickId
-            this.eventListener = ({detail}) => {
-                if (this.clickId === detail.id) {
-                    switch (detail.type) {
-                        case "clickDown":
-                            this.clickDown()
-                            break;
-                        case "clickUp":
-                            this.clickUp()
-                            break;
-                        case "clicked":
-                            this.clicked()
-                            break;
-                        case "hovered":
-                            this.hovered()
-                            break;
-                        case "leaved":
-                            this.leaved()
-                            break;
-                    }
-                }
-            }
-            window.addEventListener("GameScreenClick", this.eventListener, false)
         }
     }
     Button.prototype.getButtonMovePosition = function () {
@@ -450,19 +475,30 @@ const Button = ((_super) => {
 const SwitchSprite = ((_super) => {
     __extends(SwitchSprite, _super)
 
-    function SwitchSprite(open, close) {
+    function SwitchSprite(open, close, onSwitch) {
         const _this = _super.call(this) || this
         this.setOpenSrc(open)
         this.setCloseSrc(close)
+        if (onSwitch && typeof onSwitch === "function") {
+            this.onSwitch = onSwitch
+        } else {
+            this.onSwitch = (value) => {
+            }
+        }
         this.setSwitch(true)
         return _this
     }
 
+    SwitchSprite.prototype.getSwitch = function () {
+        return this._switch_
+    }
     SwitchSprite.prototype.clicked = function () {
         this._switch_ = !this._switch_
+        this.onSwitch(this._switch_)
     }
     SwitchSprite.prototype.setSwitch = function (value) {
         this._switch_ = true === value || value === "true" || value === "TRUE"
+        this.onSwitch(this._switch_)
     }
     SwitchSprite.prototype.setOpenSrc = function (src) {
         if (src && typeof src === "string") {
@@ -497,9 +533,9 @@ const ButtonSprite = ((_super) => {
 
     function ButtonSprite(notClick, clicked, process) {
         const _this = _super.call(this) || this
+        this._image = undefined
         this.setNotClick(notClick)
         this.setClicked(clicked)
-        this._image = undefined
         if (process && typeof process === "function") {
             this._process = process
         } else {
@@ -509,35 +545,47 @@ const ButtonSprite = ((_super) => {
         return _this
     }
 
-    ButtonSprite.prototype.setNotClick = function (notClick) {
-        if (notClick && typeof notClick === "string") {
+    ButtonSprite.prototype.setNotClick = function (src) {
+        if (src && typeof src === "string") {
             if (undefined === this._notClick) {
                 this._notClick = new Image()
             }
             this._notClick.src = src
+            this._image = this._notClick
             this._notClick.onload = () => {
                 this.setWidth(this._notClick.width)
                 this.setHeight(this._notClick.height)
             }
         }
     }
-    ButtonSprite.prototype.setClicked = function (clicked) {
-        if (clicked && typeof clicked === "string") {
+    ButtonSprite.prototype.setClicked = function (src) {
+        if (src && typeof src === "string") {
             if (undefined === this._clicked) {
                 this._clicked = new Image()
             }
             this._clicked.src = src
         }
     }
+    ButtonSprite.prototype.leaved = function () {
+            this.clickUp()
+    }
     ButtonSprite.prototype.clickUp = function () {
-        this._image = this._notClick
+        if (undefined === this._clicked) {
+            this.setScale(1)
+        } else {
+            this._image = this._notClick
+        }
     }
     ButtonSprite.prototype.clicked = function () {
         this._image = this._notClick
         this._process()
     }
     ButtonSprite.prototype.clickDown = function () {
-        this._image = this._clicked
+        if (undefined === this._clicked) {
+            this.setScale(0.9)
+        } else {
+            this._image = this._clicked
+        }
     }
     ButtonSprite.prototype._drawPicture = function (canvasContext, x, y) {
         if (this._image) {
