@@ -88,38 +88,38 @@ GameOver.prototype.init = function () {
 
     const gameOverTextNode = framework.createNode({
         res: "GAME OVER", x: bgImgNode.x, y: bgImgNode.y - 160,
-        type: "text", fontSize: 72,fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 72, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(gameOverTextNode)
 
     const levelTextNode = framework.createNode({
         res: "LEVEL", x: bgImgNode.x - 150, y: gameOverTextNode.y + 80,
-        type: "text", fontSize: 42, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 42, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(levelTextNode)
     this.levelValueTextNode = framework.createNode({
         res: "0", x: levelTextNode.x, y: levelTextNode.y + 52,
-        type: "text", fontSize: 32, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 32, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(this.levelValueTextNode)
     const linesTextNode = framework.createNode({
         res: "LINES", x: bgImgNode.x + 150, y: levelTextNode.y,
-        type: "text", fontSize: 42, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 42, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(linesTextNode)
     this.linesValueTextNode = framework.createNode({
         res: "0", x: linesTextNode.x, y: linesTextNode.y + 52,
-        type: "text", fontSize: 32, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 32, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(this.linesValueTextNode)
     const totalScoreTextNode = framework.createNode({
         res: "TOTAL SCORE", x: bgImgNode.x, y: bgImgNode.y + 42,
-        type: "text", fontSize: 42, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 42, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(totalScoreTextNode)
     this.totalScoreValueTextNode = framework.createNode({
         res: "0", x: totalScoreTextNode.x, y: totalScoreTextNode.y + 52,
-        type: "text", fontSize: 32, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 32, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(this.totalScoreValueTextNode)
 
@@ -199,7 +199,7 @@ GameExit.prototype.init = function () {
 
     const areYouSureTextNode = framework.createNode({
         res: "ARE YOU SURE?", x: bgImgNode.x, y: bgImgNode.y - 72,
-        type: "text", fontSize: 64, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 64, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(areYouSureTextNode)
 
@@ -337,6 +337,7 @@ GameMain.prototype.update = function (deltaTime) {
     const position = this._logoMenuRebound.getCurrentPosition(deltaTime * 30)
     this.logoMenuNode.y = position.y
     this.logoMenuNode.x = position.x
+    GameDrawManager.setClearStatus(GameDrawManager.ClearStatus.once)
 }
 
 function GameRunning() {
@@ -387,7 +388,7 @@ GameRunning.prototype.init = function () {
     this._drawNodes.push(nextBoardNode)
     const nextTextNode = framework.createNode({
         res: "NEXT", x: nextBoardNode.x, y: nextBoardNode.y - nextBoard.height / 2 + 50,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(nextTextNode)
     const infoBoard = framework.getImageByFileName("info_board.png")
@@ -398,22 +399,22 @@ GameRunning.prototype.init = function () {
     this._drawNodes.push(infoBoardNode)
     const levelTextNode = framework.createNode({
         res: "LEVEL", x: infoBoardNode.x, y: infoBoardNode.y - infoBoard.height / 2 + 50,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(levelTextNode)
     this.levelValueTextNode = framework.createNode({
         res: "0", x: levelTextNode.x, y: levelTextNode.y + 56,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(this.levelValueTextNode)
     const linesTextNode = framework.createNode({
         res: "LINES", x: infoBoardNode.x, y: infoBoardNode.y + 25,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(linesTextNode)
     this.linesValueTextNode = framework.createNode({
         res: "0", x: linesTextNode.x, y: linesTextNode.y + 52,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(this.linesValueTextNode)
     const scoreBoard = framework.getImageByFileName("score_board.png")
@@ -424,12 +425,12 @@ GameRunning.prototype.init = function () {
     this._drawNodes.push(scoreBoardNode)
     const scoreTextNode = framework.createNode({
         res: "SCORE", x: scoreBoardNode.x, y: scoreBoardNode.y - scoreBoard.height / 2 + 50,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(scoreTextNode)
     this.totalScoreValueTextNode = framework.createNode({
         res: "0", x: scoreTextNode.x, y: scoreTextNode.y + 56,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(this.totalScoreValueTextNode)
 
@@ -457,7 +458,7 @@ GameRunning.prototype.init = function () {
     this._drawNodes.push(keyLeftButtonNode)
     const moveLeftTextNode = framework.createNode({
         res: "Left", x: keyLeftButtonNode.x, y: keyLeftButtonNode.y + keyLeftButton.height * 0.8,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(moveLeftTextNode)
     const keyUpButton = framework.getImageByFileName("key-up.png")
@@ -469,7 +470,7 @@ GameRunning.prototype.init = function () {
     this._drawNodes.push(keyUpButtonNode)
     const rotateCubeTextNode = framework.createNode({
         res: "Rotate", x: keyUpButtonNode.x, y: moveLeftTextNode.y,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(rotateCubeTextNode)
     const keyRightButton = framework.getImageByFileName("key-right.png")
@@ -481,7 +482,7 @@ GameRunning.prototype.init = function () {
     this._drawNodes.push(keyRightButtonNode)
     const moveRightTextNode = framework.createNode({
         res: "Right", x: keyRightButtonNode.x, y: rotateCubeTextNode.y,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(moveRightTextNode)
     const keyDownButton = framework.getImageByFileName("key-down.png")
@@ -493,7 +494,7 @@ GameRunning.prototype.init = function () {
     this._drawNodes.push(keyDownButtonNode)
     const fastDownTextNode = framework.createNode({
         res: "Fast", x: keyDownButtonNode.x, y: moveRightTextNode.y,
-        type: "text", fontSize: 36, fontWeight:"bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
+        type: "text", fontSize: 36, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(fastDownTextNode)
 
