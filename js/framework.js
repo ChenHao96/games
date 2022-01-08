@@ -136,17 +136,19 @@ framework.createNode = (node) => {
         }
         case "img": {
             const imageSprite = new ImageSprite()
-            imageSprite.setSrc(res.src)
             imageSprite.setPosition(x, y)
+            imageSprite.setSrc(res.src)
             return imageSprite
         }
         case "button": {
+            // TODO:
             const imageSprite = new ImageSprite()
             imageSprite.setSrc(res.src)
             imageSprite.setPosition(x, y)
             return imageSprite
         }
         case "switch": {
+            // TODO:
             const imageSprite = new ImageSprite()
             imageSprite.setSrc(res.src)
             imageSprite.setPosition(x, y)

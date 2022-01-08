@@ -39,10 +39,9 @@ Application.prototype.init = function () {
         return
     }
     this._initialized_ = true
-    const worldSize = framework.getWorldSize()
     const bgImg = framework.getImageByFileName("bg.jpg")
     const bgImgNode = framework.createNode({
-        res: bgImg, x: worldSize.width / 2, y: worldSize.height / 2
+        res: bgImg, x: 0, y: 0
     })
     this._drawNodes.push(bgImgNode)
     const start = framework.getImageByFileName("200x200.jpg")
