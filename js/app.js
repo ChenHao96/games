@@ -29,6 +29,9 @@ Application.prototype.destroy = function () {
     this._initialized_ = false
 }
 Application.prototype.before = function () {
+    const img = framework._resources["favicon.ico"]
+    GameDrawManager.setTitle("俄罗斯方块-欣欣专享")
+    GameDrawManager.setFavicon(img.src)
     framework.playEffect("res/soundtrack", true)
 }
 Application.prototype.init = function () {
@@ -1078,7 +1081,6 @@ async function gameStart(canvasElement, canvasContext, loadResources) {
 }
 
 (async function () {
-
     function loadResources(url, split) {
         return new Promise((resolve, reject) => {
             const img = new Image()
@@ -1116,21 +1118,15 @@ async function gameStart(canvasElement, canvasContext, loadResources) {
     }
 
     const resources = await loadResources("res/tetris.png", true)
-    const img = resources["favicon.ico"]
-    GameDrawManager.setTitle("俄罗斯方块-欣欣专享")
-    GameDrawManager.setFavicon(img.src)
-
     GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
     GameWorldManager.setWorldSize(1080, 1920)
     GameScreenClick.activityClick()
-
-    await framework.pushScene(new Application())
-    await framework.run(resources)
-
+    framework.run(resources)
     const loadings = document.body.getElementsByClassName("loading")
     if (loadings && loadings.length > 0) {
         for (let i = 0; i < loadings.length; i++) {
             document.body.removeChild(loadings[i])
         }
     }
+    framework.pushScene(new Application())
 })()
