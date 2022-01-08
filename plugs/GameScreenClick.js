@@ -41,12 +41,15 @@ window.GameScreenClick = (() => {
         return false
     }
     let clickId = 0
-    const list = []
-    GameScreenClick.addClickItem = function (sx, sy, ex, ey) {
-        const item = {beginX: sx, beginY: sy, endX: ex, endY: ey}
-        item.id = clickId++
-        list.push(item)
-        return item.id
+    const list = [], listFuncMap = {}
+    GameScreenClick.addClickItem = function (postFunc) {
+        const id = ++clickId
+        list.push(postFunc)
+        listFuncMap[postFunc] = id
+        return id
+    }
+    GameScreenClick.removeClickItem = function (postFunc) {
+        // TODO: 移除检测
     }
     GameScreenClick.clearClicks = function () {
         list.length = 0
@@ -61,26 +64,27 @@ window.GameScreenClick = (() => {
         canvas.onmousemove = (e) => {
             canvas.style.cursor = ""
             for (let i = 0; i < list.length; i++) {
-                const item = list[i]
+                const func = list[i]
+                const item = func(), itemId = listFuncMap[func]
                 if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
                     if (!mobileDevice) {
                         canvas.style.cursor = "pointer"
-                        if (item.id !== lastHovered) {
-                            lastHovered = item.id
+                        if (itemId !== lastHovered) {
+                            lastHovered = itemId
                             window.dispatchEvent(new CustomEvent('GameScreenClick', {
                                 detail: {
                                     type: "hovered",
-                                    id: item.id
+                                    id: itemId
                                 }
                             }))
                         }
                     }
                 } else {
-                    if (lastHovered === item.id) {
+                    if (lastHovered === itemId) {
                         window.dispatchEvent(new CustomEvent('GameScreenClick', {
                             detail: {
                                 type: "leaved",
-                                id: item.id
+                                id: itemId
                             }
                         }))
                     }
@@ -91,13 +95,14 @@ window.GameScreenClick = (() => {
         let mouseDown = false
         canvas.onmousedown = (e) => {
             for (let i = 0; i < list.length; i++) {
-                const item = list[i]
+                const func = list[i]
+                const item = func(), itemId = listFuncMap[func]
                 if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
                     mouseDown = true
                     window.dispatchEvent(new CustomEvent('GameScreenClick', {
                         detail: {
                             type: "clickDown",
-                            id: item.id
+                            id: itemId
                         }
                     }))
                 }
@@ -106,19 +111,20 @@ window.GameScreenClick = (() => {
         canvas.onmouseup = (e) => {
             if (mouseDown) {
                 for (let i = 0; i < list.length; i++) {
-                    const item = list[i]
+                    const func = list[i]
+                    const item = func(), itemId = listFuncMap[func]
                     if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
                         window.dispatchEvent(new CustomEvent('GameScreenClick', {
                             detail: {
                                 type: "clicked",
-                                id: item.id
+                                id: itemId
                             }
                         }))
                     }
                     window.dispatchEvent(new CustomEvent('GameScreenClick', {
                         detail: {
                             type: "clickLeave",
-                            id: item.id
+                            id: itemId
                         }
                     }))
                 }

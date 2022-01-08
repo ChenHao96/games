@@ -164,7 +164,8 @@ const DrawPicture = ((_super) => {
             py = this.parent.getY()
         }
         const dx = this.getX() + px + ppx - this.getWidth() / 2, dy = this.getY() + py + ppy - this.getHeight() / 2
-        this._drawPicture(canvasContext, dx, dy)
+        const margin = GameWorldManager.getMargin()
+        this._drawPicture(canvasContext, dx + margin.left, dy + margin.top)
     }
 
     DrawPicture.prototype._drawPicture = function (canvasContext, dx, dy) {
@@ -276,10 +277,10 @@ const TextSprite = ((_super) => {
 
     function TextSprite(text) {
         const _this = _super.call(this) || this
-        this._fontSize = 64
-        this._fillStyle = "#000"
-        this._fontWeight = "bold"
-        this._fontFamily = "Georgia"
+        this.setFontSize(64)
+        this.setFillStyle("#000")
+        this.setFontWeight("bold")
+        this.setFontFamily("Georgia")
         this.setText(text)
         return _this
     }
@@ -371,4 +372,69 @@ const ImageSprite = ((_super) => {
         }
     }
     return ImageSprite
+})(GameSprite)
+
+
+const SwitchSprite = ((_super) => {
+    __extends(SwitchSprite, _super)
+
+    function SwitchSprite(open, close) {
+        const _this = _super.call(this) || this
+        this.setOpenSrc(open)
+        this.setCloseSrc(close)
+        this.setSwitch(true)
+        return _this
+    }
+
+    SwitchSprite.prototype.setScreenClickId = function (clickId) {
+        if (clickId && typeof clickId === "number") {
+            window.addEventListener("GameScreenClick", function ({detail}) {
+                if (clickId === detail.id) {
+                    console.log(detail)
+                }
+            }, false)
+        }
+    }
+    SwitchSprite.prototype.setSwitch = function (value) {
+        this._switch_ = value || value === "true" || value === "TRUE"
+    }
+    SwitchSprite.prototype.setOpenSrc = function (src) {
+        if (src && typeof src === "string") {
+            if (undefined === this._openImage) {
+                this._openImage = new Image()
+            }
+            this._openImage.src = src
+        }
+    }
+    SwitchSprite.prototype.setCloseSrc = function (src) {
+        if (src && typeof src === "string") {
+            if (undefined === this._closeImage) {
+                this._closeImage = new Image()
+            }
+            this._closeImage.src = src
+        }
+    }
+    SwitchSprite.prototype._drawPicture = function (canvasContext, x, y) {
+        if (this._switch_) {
+            canvasContext.drawImage(this._image, x, y, this.getWidth(), this.getHeight())
+        } else {
+
+        }
+    }
+    SwitchSprite.prototype.getButtonMovePosition = function () {
+        // TODO:
+    }
+    return SwitchSprite
+})(GameSprite)
+const ButtonSprite = ((_super) => {
+    __extends(ButtonSprite, _super)
+
+    function ButtonSprite() {
+        return _super.apply(this, arguments) || this
+    }
+
+    ButtonSprite.prototype.getButtonMovePosition = function () {
+        // TODO:
+    }
+    return ButtonSprite
 })(GameSprite)
