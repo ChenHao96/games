@@ -1,10 +1,6 @@
-function gameStart(canvasElement, canvasContext, loadResources) {
-
-    const img = new Image()
-    img.alt = "XXX游戏"
-    img.src = "favicon.ico"
-
-    return {
-        "favicon.ico": img
-    }
-}
+(function () {
+    GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
+    GameWorldManager.setWorldSize(1080, 1920)
+    GameScreenClick.activityClick()
+    GameDrawManager.run()
+})()
