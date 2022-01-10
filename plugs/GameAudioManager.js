@@ -74,6 +74,11 @@ window.GameAudioManager = (() => {
         cacheBackgroundMusic = cacheSoundEffect[name]
         if (undefined === cacheBackgroundMusic) {
             cacheBackgroundMusic = createAudioControl(name)
+            cacheBackgroundMusic.onended = function () {
+                if (this.loop) {
+                    this.play()
+                }
+            }
         }
         cacheBackgroundMusic.loop = true
         document.body.appendChild(cacheBackgroundMusic)
