@@ -114,17 +114,17 @@ window.GameScreenClick = (() => {
                         if (itemId === lastClickId) {
                             window.dispatchEvent(new CustomEvent('GameScreenClick', {
                                 detail: {
+                                    type: "clickUp",
+                                    id: itemId
+                                }
+                            }))
+                            window.dispatchEvent(new CustomEvent('GameScreenClick', {
+                                detail: {
                                     type: "clicked",
                                     id: itemId
                                 }
                             }))
                         }
-                        window.dispatchEvent(new CustomEvent('GameScreenClick', {
-                            detail: {
-                                type: "clickUp",
-                                id: itemId
-                            }
-                        }))
                     }
                 }
                 mouseDown = false
