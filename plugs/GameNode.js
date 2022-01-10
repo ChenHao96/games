@@ -466,7 +466,6 @@ const Button = ((_super) => {
                         this.clickUp()
                         break;
                     case "clicked":
-                        console.log(this)
                         this.clicked()
                         break;
                     case "hovered":
@@ -482,7 +481,7 @@ const Button = ((_super) => {
     }
     Button.prototype._runExit = function () {
         GameScreenClick.removeClickItem(this.clickId)
-        window.addEventListener("GameScreenClick", this.eventListener, false)
+        window.removeEventListener("GameScreenClick", this.eventListener, false)
     }
     return Button
 })(GameSprite)
