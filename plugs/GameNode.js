@@ -11,18 +11,20 @@ const __extends = (function () {
     }
     return function (d, b) {
         extendStatics(d, b)
+
         function __() {
             this.constructor = d
         }
+
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __())
     }
 })()
 const GameScene = (() => {
     function GameScene() {
-        this.indexNode = {}
         this.scale = {width: 1, height: 1}
         return this
     }
+
     GameScene.prototype.init = function () {
         if (this.initialized) {
             return
@@ -42,6 +44,9 @@ const GameScene = (() => {
         this._runExit()
     }
     GameScene.prototype.addChild = function (child, index) {
+        if (undefined === this.indexNode) {
+            this.indexNode = {}
+        }
         index = undefined === index ? 0 : index
         let array = this.indexNode[index]
         if (undefined === array) {
@@ -53,26 +58,28 @@ const GameScene = (() => {
         this.changeNode = true
     }
     GameScene.prototype.foreachChild = function (consumer) {
-        const result = this.nodeArray ? this.nodeArray : []
-        if (this.changeNode) {
-            const indexArray = []
-            for (let index in this.indexNode) {
-                indexArray.push(index)
-            }
-            indexArray.sort()
-            result.length = 0
-            for (let i = 0; i < indexArray.length; i++) {
-                const key = indexArray[i]
-                const list = this.indexNode[key]
-                for (let j = 0; j < list.length; j++) {
-                    result.push(list[j])
+        if (this.indexNode) {
+            const result = this.nodeArray ? this.nodeArray : []
+            if (this.changeNode) {
+                const indexArray = []
+                for (let index in this.indexNode) {
+                    indexArray.push(index)
                 }
+                indexArray.sort()
+                result.length = 0
+                for (let i = 0; i < indexArray.length; i++) {
+                    const key = indexArray[i]
+                    const list = this.indexNode[key]
+                    for (let j = 0; j < list.length; j++) {
+                        result.push(list[j])
+                    }
+                }
+                this.nodeArray = result
+                this.changeNode = false
             }
-            this.nodeArray = result
-            this.changeNode = false
-        }
-        for (let i = 0; i < result.length; i++) {
-            consumer(result[i], i)
+            for (let i = 0; i < result.length; i++) {
+                consumer(result[i], i)
+            }
         }
     }
     GameScene.prototype.getWidth = function () {
@@ -142,11 +149,13 @@ const GameScene = (() => {
 })()
 const GamePosition = ((_super) => {
     __extends(GamePosition, _super)
+
     function GamePosition() {
         const _this = _super.call(this) || this
         this.position = {x: 0, y: 0}
         return _this
     }
+
     GamePosition.prototype.getX = function () {
         return this.position.x
     }
@@ -185,9 +194,11 @@ const GamePosition = ((_super) => {
 })(GameScene)
 const DrawPicture = ((_super) => {
     __extends(DrawPicture, _super)
+
     function DrawPicture() {
         return _super.apply(this, arguments) || this
     }
+
     DrawPicture.prototype.drawPicture = function (canvasContext) {
         const scale = this.getScale()
         const margin = GameWorldManager.getMargin()
@@ -202,9 +213,11 @@ const DrawPicture = ((_super) => {
 })(GamePosition)
 const GameLayout = ((_super) => {
     __extends(GameLayout, _super)
+
     function GameLayout() {
         return _super.apply(this, arguments) || this
     }
+
     return GameLayout
 })(DrawPicture)
 const Color = (() => {
@@ -215,6 +228,7 @@ const Color = (() => {
         this.setBlue(b)
         return this
     }
+
     Color.prototype.setRed = function (red) {
         if (typeof red === "number") {
             this.red = Math.abs(red) % 256
@@ -242,9 +256,11 @@ const Color = (() => {
 })()
 const ColorLayout = ((_super) => {
     __extends(ColorLayout, _super)
+
     function ColorLayout() {
         return _super.apply(this, arguments) || this
     }
+
     ColorLayout.prototype.setColor = function (color) {
         if (color && color instanceof Color) {
             this.color = color
@@ -262,11 +278,13 @@ const ColorLayout = ((_super) => {
 })(GameLayout)
 const ImageLayout = ((_super) => {
     __extends(ImageLayout, _super)
+
     function ImageLayout(src) {
         const _this = _super.call(this) || this
         this.setSrc(src)
         return _this
     }
+
 // TODO: 拉伸 平铺
 // TODO: 偏移
     ImageLayout.prototype.setSrc = function (src) {
@@ -288,13 +306,16 @@ const ImageLayout = ((_super) => {
 })(GameLayout)
 const GameSprite = ((_super) => {
     __extends(GameSprite, _super)
+
     function GameSprite() {
         return _super.apply(this, arguments) || this
     }
+
     return GameSprite
 })(DrawPicture)
 const TextSprite = ((_super) => {
     __extends(TextSprite, _super)
+
     function TextSprite(text) {
         const _this = _super.call(this) || this
         this.setFontSize(64)
@@ -304,6 +325,7 @@ const TextSprite = ((_super) => {
         this.setText(text)
         return _this
     }
+
     TextSprite.prototype.getText = function () {
         return this._text
     }
@@ -371,10 +393,16 @@ const TextSprite = ((_super) => {
 })(GameSprite)
 const ImageSprite = ((_super) => {
     __extends(ImageSprite, _super)
+
     function ImageSprite(src) {
         const _this = _super.call(this) || this
         this.setSrc(src)
+        this.placeholder = false
         return _this
+    }
+
+    ImageSprite.prototype.setPlaceholder = function (value) {
+        this.placeholder = true === value || "true" === value || "true" === value
     }
     ImageSprite.prototype.setSrc = function (src) {
         if (src && typeof src === "string") {
@@ -382,14 +410,13 @@ const ImageSprite = ((_super) => {
                 this._image = new Image()
             }
             this._image.src = src
-            this._image.onload = () => {
-                this.setWidth(this._image.width)
-                this.setHeight(this._image.height)
-            }
+            this.setWidth(this._image.width)
+            this.setHeight(this._image.height)
+            this.placeholder = false
         }
     }
     ImageSprite.prototype._drawPicture = function (canvasContext, x, y) {
-        if (this._image) {
+        if (this._image && !this.placeholder) {
             const scale = this.getScale()
             const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
             canvasContext.drawImage(this._image, x, y, width, height)
@@ -399,12 +426,14 @@ const ImageSprite = ((_super) => {
 })(GameSprite)
 const Button = ((_super) => {
     __extends(Button, _super)
+
     function Button() {
         const _this = _super.call(this) || this
         this.setWidth(0)
         this.setHeight(0)
         return _this
     }
+
     Button.prototype.clickUp = function () {
     }
     Button.prototype.clickDown = function () {
@@ -416,6 +445,17 @@ const Button = ((_super) => {
     Button.prototype.leaved = function () {
     }
     Button.prototype._runBefore = function () {
+        this.clickId = GameScreenClick.addClickItem(() => {
+            const scale = this.getScale()
+            const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
+            const margin = GameWorldManager.getMargin()
+            const dx = this.getAX() + margin.left - width / 2, dy = this.getAY() + margin.top - height / 2
+            const result = {beginX: dx, beginY: dy}
+            result.clickId = this.clickId
+            result.endX = result.beginX + width
+            result.endY = result.beginY + height
+            return result
+        })
         this.eventListener = ({detail}) => {
             if (this.clickId === detail.id) {
                 switch (detail.type) {
@@ -426,6 +466,7 @@ const Button = ((_super) => {
                         this.clickUp()
                         break;
                     case "clicked":
+                        console.log(this)
                         this.clicked()
                         break;
                     case "hovered":
@@ -443,28 +484,11 @@ const Button = ((_super) => {
         GameScreenClick.removeClickItem(this.clickId)
         window.addEventListener("GameScreenClick", this.eventListener, false)
     }
-    Button.prototype.setScreenClickId = function (clickId) {
-        if (clickId && typeof clickId === "number") {
-            this.clickId = clickId
-        }
-    }
-    Button.prototype.getButtonMovePosition = function () {
-        const px = this.parent.getX(), py = this.parent.getY()
-        const ppx = this.parent.parent.getWidth() / 2, ppy = this.parent.parent.getHeight() / 2
-        const dx = this.getX() + px + ppx - this.getWidth() / 2, dy = this.getY() + py + ppy - this.getHeight() / 2
-        const margin = GameWorldManager.getMargin()
-        return {
-            beginX: dx + margin.left,
-            beginY: dy + margin.top,
-            endX: dx + margin.left + this.getWidth(),
-            endY: dy + margin.top + this.getHeight(),
-            clickId: this.clickId
-        }
-    }
     return Button
 })(GameSprite)
 const SwitchSprite = ((_super) => {
     __extends(SwitchSprite, _super)
+
     function SwitchSprite(open, close, onSwitch) {
         const _this = _super.call(this) || this
         this.setOpenSrc(open)
@@ -478,6 +502,7 @@ const SwitchSprite = ((_super) => {
         this.setSwitch(true)
         return _this
     }
+
     SwitchSprite.prototype.leaved = function () {
         this.clickUp()
     }
@@ -504,10 +529,8 @@ const SwitchSprite = ((_super) => {
                 this._openImage = new Image()
             }
             this._openImage.src = src
-            this._openImage.onload = () => {
-                this.setWidth(this._openImage.width)
-                this.setHeight(this._openImage.height)
-            }
+            this.setWidth(this._openImage.width)
+            this.setHeight(this._openImage.height)
         }
     }
     SwitchSprite.prototype.setCloseSrc = function (src) {
@@ -530,6 +553,7 @@ const SwitchSprite = ((_super) => {
 })(Button)
 const ButtonSprite = ((_super) => {
     __extends(ButtonSprite, _super)
+
     function ButtonSprite(notClick, clicked, process) {
         const _this = _super.call(this) || this
         this._image = undefined
@@ -543,6 +567,7 @@ const ButtonSprite = ((_super) => {
         }
         return _this
     }
+
     ButtonSprite.prototype.setNotClick = function (src) {
         if (src && typeof src === "string") {
             if (undefined === this._notClick) {
@@ -550,10 +575,8 @@ const ButtonSprite = ((_super) => {
             }
             this._notClick.src = src
             this._image = this._notClick
-            this._notClick.onload = () => {
-                this.setWidth(this._notClick.width)
-                this.setHeight(this._notClick.height)
-            }
+            this.setWidth(this._notClick.width)
+            this.setHeight(this._notClick.height)
         }
     }
     ButtonSprite.prototype.setClicked = function (src) {
