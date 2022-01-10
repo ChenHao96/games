@@ -58,15 +58,15 @@ window.GameWorldManager = (() => {
             hScale = 1080 * (worldWidth / 1920)
             wScale = 1920 * (worldHeight / 1080)
         }
-        const w = wScale - worldWidth, h = hScale - worldHeight
+        const w = Math.floor(wScale) - worldWidth, h = Math.floor(hScale) - worldHeight
         if (Math.abs(w) >= Math.abs(h)) {
             canvasHeight = worldHeight
-            canvasWidth = wScale
+            canvasWidth = Math.floor(wScale)
             margin.left = Math.floor(w / 2)
             margin.top = 0
         } else {
             canvasWidth = worldWidth
-            canvasHeight = hScale
+            canvasHeight = Math.floor(hScale)
             margin.top = Math.floor(h / 2)
             margin.left = 0
         }

@@ -11,11 +11,9 @@ const __extends = (function () {
     }
     return function (d, b) {
         extendStatics(d, b)
-
         function __() {
             this.constructor = d
         }
-
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __())
     }
 })()
@@ -25,7 +23,6 @@ const GameScene = (() => {
         this.scale = {width: 1, height: 1}
         return this
     }
-
     GameScene.prototype.init = function () {
         if (this.initialized) {
             return
@@ -103,10 +100,13 @@ const GameScene = (() => {
         this.height = Math.abs(height)
     }
     GameScene.prototype.getScale = function () {
-        return {
-            width: this.scale.width,
-            height: this.scale.height
+        let width = this.scale.width, height = this.scale.height
+        if (this.parent) {
+            const parentScale = this.parent.getScale()
+            width *= parentScale.width
+            height *= parentScale.height
         }
+        return {width: width, height: height}
     }
     GameScene.prototype.setScale = function (scale) {
         if (typeof scale === 'number') {
@@ -119,6 +119,14 @@ const GameScene = (() => {
                 this.scale.height = scale.height
             }
         }
+    }
+    GameScene.prototype.getAX = function () {
+        return this.getWidth() / 2
+    }
+    GameScene.prototype.getAY = function () {
+        return this.getHeight() / 2
+    }
+    GameScene.prototype.drawPicture = function (canvasContext) {
     }
     GameScene.prototype._init = function () {
     }
@@ -134,24 +142,22 @@ const GameScene = (() => {
 })()
 const GamePosition = ((_super) => {
     __extends(GamePosition, _super)
-
     function GamePosition() {
         const _this = _super.call(this) || this
         this.position = {x: 0, y: 0}
         return _this
     }
-
     GamePosition.prototype.getX = function () {
         return this.position.x
+    }
+    GamePosition.prototype.getY = function () {
+        return this.position.y
     }
     GamePosition.prototype.setX = function (x) {
         if (typeof x === "number") {
             this.position.x = x
             this.x = x
         }
-    }
-    GamePosition.prototype.getY = function () {
-        return this.position.y
     }
     GamePosition.prototype.setY = function (y) {
         if (typeof y === "number") {
@@ -169,40 +175,36 @@ const GamePosition = ((_super) => {
         this.setX(x)
         this.setY(y)
     }
+    GamePosition.prototype.getAX = function () {
+        return this.getX() + this.parent.getAX()
+    }
+    GamePosition.prototype.getAY = function () {
+        return this.getY() + this.parent.getAY()
+    }
     return GamePosition
 })(GameScene)
 const DrawPicture = ((_super) => {
     __extends(DrawPicture, _super)
-
     function DrawPicture() {
         return _super.apply(this, arguments) || this
     }
-
     DrawPicture.prototype.drawPicture = function (canvasContext) {
-        let ppx = 0, ppy = 0, px = this.parent.getWidth() / 2, py = this.parent.getHeight() / 2
-        if (undefined !== this.parent.parent) {
-            ppx = this.parent.parent.getWidth() / 2
-            ppy = this.parent.parent.getHeight() / 2
-            px = this.parent.getX()
-            py = this.parent.getY()
-        }
-        const dx = this.getX() + px + ppx - this.getWidth() / 2, dy = this.getY() + py + ppy - this.getHeight() / 2
+        const scale = this.getScale()
         const margin = GameWorldManager.getMargin()
-        this._drawPicture(canvasContext, dx + margin.left, dy + margin.top)
+        const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
+        const dx = this.getAX() + margin.left - width / 2
+        const dy = this.getAY() + margin.top - height / 2
+        this._drawPicture(canvasContext, dx, dy)
     }
-
     DrawPicture.prototype._drawPicture = function (canvasContext, dx, dy) {
-
     }
     return DrawPicture
 })(GamePosition)
 const GameLayout = ((_super) => {
     __extends(GameLayout, _super)
-
     function GameLayout() {
         return _super.apply(this, arguments) || this
     }
-
     return GameLayout
 })(DrawPicture)
 const Color = (() => {
@@ -213,7 +215,6 @@ const Color = (() => {
         this.setBlue(b)
         return this
     }
-
     Color.prototype.setRed = function (red) {
         if (typeof red === "number") {
             this.red = Math.abs(red) % 256
@@ -241,34 +242,31 @@ const Color = (() => {
 })()
 const ColorLayout = ((_super) => {
     __extends(ColorLayout, _super)
-
     function ColorLayout() {
         return _super.apply(this, arguments) || this
     }
-
     ColorLayout.prototype.setColor = function (color) {
         if (color && color instanceof Color) {
             this.color = color
         }
     }
-
     ColorLayout.prototype._drawPicture = function (canvasContext, x, y) {
         if (this.color) {
             canvasContext.fillStyle = this.color.getColor()
-            canvasContext.fillRect(x, y, this.getWidth(), this.getHeight())
+            const scale = this.getScale()
+            const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
+            canvasContext.fillRect(x, y, width, height)
         }
     }
     return ColorLayout
 })(GameLayout)
 const ImageLayout = ((_super) => {
     __extends(ImageLayout, _super)
-
     function ImageLayout(src) {
         const _this = _super.call(this) || this
         this.setSrc(src)
         return _this
     }
-
 // TODO: 拉伸 平铺
 // TODO: 偏移
     ImageLayout.prototype.setSrc = function (src) {
@@ -281,23 +279,22 @@ const ImageLayout = ((_super) => {
     }
     ImageLayout.prototype._drawPicture = function (canvasContext, x, y) {
         if (this._image) {
-            canvasContext.drawImage(this._image, x, y, this.getWidth(), this.getHeight())
+            const scale = this.getScale()
+            const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
+            canvasContext.drawImage(this._image, x, y, width, height)
         }
     }
     return ImageLayout
 })(GameLayout)
 const GameSprite = ((_super) => {
     __extends(GameSprite, _super)
-
     function GameSprite() {
         return _super.apply(this, arguments) || this
     }
-
     return GameSprite
 })(DrawPicture)
 const TextSprite = ((_super) => {
     __extends(TextSprite, _super)
-
     function TextSprite(text) {
         const _this = _super.call(this) || this
         this.setFontSize(64)
@@ -307,7 +304,6 @@ const TextSprite = ((_super) => {
         this.setText(text)
         return _this
     }
-
     TextSprite.prototype.getText = function () {
         return this._text
     }
@@ -364,22 +360,22 @@ const TextSprite = ((_super) => {
     TextSprite.prototype._drawPicture = function (canvasContext, x, y) {
         if (this._text) {
             canvasContext.fillStyle = this.getFillStyle()
-            // TODO: scale
-            canvasContext.font = this._fontSize + "px " + this._fontWeight + " " + this._fontFamily
-            canvasContext.fillText(this._text, x, y)
+            const scale = this.getScale()
+            const fontSize = this._fontSize * scale.width
+            const dy = this.getHeight() * scale.height
+            canvasContext.font = fontSize + "px " + this._fontWeight + " " + this._fontFamily
+            canvasContext.fillText(this._text, x, y + dy)
         }
     }
     return TextSprite
 })(GameSprite)
 const ImageSprite = ((_super) => {
     __extends(ImageSprite, _super)
-
     function ImageSprite(src) {
         const _this = _super.call(this) || this
         this.setSrc(src)
         return _this
     }
-
     ImageSprite.prototype.setSrc = function (src) {
         if (src && typeof src === "string") {
             if (undefined === this._image) {
@@ -394,35 +390,30 @@ const ImageSprite = ((_super) => {
     }
     ImageSprite.prototype._drawPicture = function (canvasContext, x, y) {
         if (this._image) {
-            canvasContext.drawImage(this._image, x, y, this.getWidth(), this.getHeight())
+            const scale = this.getScale()
+            const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
+            canvasContext.drawImage(this._image, x, y, width, height)
         }
     }
     return ImageSprite
 })(GameSprite)
 const Button = ((_super) => {
     __extends(Button, _super)
-
     function Button() {
         const _this = _super.call(this) || this
         this.setWidth(0)
         this.setHeight(0)
         return _this
     }
-
     Button.prototype.clickUp = function () {
-
     }
     Button.prototype.clickDown = function () {
-
     }
     Button.prototype.clicked = function () {
-
     }
     Button.prototype.hovered = function () {
-
     }
     Button.prototype.leaved = function () {
-
     }
     Button.prototype._runBefore = function () {
         this.eventListener = ({detail}) => {
@@ -474,7 +465,6 @@ const Button = ((_super) => {
 })(GameSprite)
 const SwitchSprite = ((_super) => {
     __extends(SwitchSprite, _super)
-
     function SwitchSprite(open, close, onSwitch) {
         const _this = _super.call(this) || this
         this.setOpenSrc(open)
@@ -488,13 +478,21 @@ const SwitchSprite = ((_super) => {
         this.setSwitch(true)
         return _this
     }
-
-    SwitchSprite.prototype.getSwitch = function () {
-        return this._switch_
+    SwitchSprite.prototype.leaved = function () {
+        this.clickUp()
+    }
+    SwitchSprite.prototype.clickUp = function () {
+        this.setScale(1)
+    }
+    SwitchSprite.prototype.clickDown = function () {
+        this.setScale(0.95)
     }
     SwitchSprite.prototype.clicked = function () {
         this._switch_ = !this._switch_
         this.onSwitch(this._switch_)
+    }
+    SwitchSprite.prototype.getSwitch = function () {
+        return this._switch_
     }
     SwitchSprite.prototype.setSwitch = function (value) {
         this._switch_ = true === value || value === "true" || value === "TRUE"
@@ -523,14 +521,15 @@ const SwitchSprite = ((_super) => {
     SwitchSprite.prototype._drawPicture = function (canvasContext, x, y) {
         const image = this._switch_ ? this._openImage : this._closeImage
         if (image) {
-            canvasContext.drawImage(image, x, y, this.getWidth(), this.getHeight())
+            const scale = this.getScale()
+            const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
+            canvasContext.drawImage(image, x, y, width, height)
         }
     }
     return SwitchSprite
 })(Button)
 const ButtonSprite = ((_super) => {
     __extends(ButtonSprite, _super)
-
     function ButtonSprite(notClick, clicked, process) {
         const _this = _super.call(this) || this
         this._image = undefined
@@ -544,7 +543,6 @@ const ButtonSprite = ((_super) => {
         }
         return _this
     }
-
     ButtonSprite.prototype.setNotClick = function (src) {
         if (src && typeof src === "string") {
             if (undefined === this._notClick) {
@@ -567,7 +565,7 @@ const ButtonSprite = ((_super) => {
         }
     }
     ButtonSprite.prototype.leaved = function () {
-            this.clickUp()
+        this.clickUp()
     }
     ButtonSprite.prototype.clickUp = function () {
         if (undefined === this._clicked) {
@@ -576,20 +574,22 @@ const ButtonSprite = ((_super) => {
             this._image = this._notClick
         }
     }
-    ButtonSprite.prototype.clicked = function () {
-        this._image = this._notClick
-        this._process()
-    }
     ButtonSprite.prototype.clickDown = function () {
         if (undefined === this._clicked) {
-            this.setScale(0.9)
+            this.setScale(0.95)
         } else {
             this._image = this._clicked
         }
     }
+    ButtonSprite.prototype.clicked = function () {
+        this._image = this._notClick
+        this._process()
+    }
     ButtonSprite.prototype._drawPicture = function (canvasContext, x, y) {
         if (this._image) {
-            canvasContext.drawImage(this._image, x, y, this.getWidth(), this.getHeight())
+            const scale = this.getScale()
+            const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
+            canvasContext.drawImage(this._image, x, y, width, height)
         }
     }
     return ButtonSprite
