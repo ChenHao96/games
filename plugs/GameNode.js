@@ -451,7 +451,6 @@ const Button = ((_super) => {
             const margin = GameWorldManager.getMargin()
             const dx = this.getAX() + margin.left - width / 2, dy = this.getAY() + margin.top - height / 2
             const result = {beginX: dx, beginY: dy}
-            result.clickId = this.clickId
             result.endX = result.beginX + width
             result.endY = result.beginY + height
             return result

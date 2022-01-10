@@ -32,18 +32,15 @@ window.GameDrawManager = (() => {
             node.foreachChild(runExitNodeFunc)
         }
     }
+    let waitExitScene = undefined
     const pushScene = function (array, scene) {
         if (scene instanceof GameScene) {
             const worldSize = GameWorldManager.getWorldSize()
             scene.setWidth(worldSize.width)
             scene.setHeight(worldSize.height)
             initNodeFunc(scene)
-            let lastScene = undefined
-            if (array.length > 0) {
-                lastScene = array[array.length - 1]
-            }
             array.push(scene)
-            runExitNodeFunc(lastScene)
+            waitExitScene = array[array.length - 2]
         }
     }
     GameDrawManager.pushScene = (scene) => {
@@ -182,6 +179,10 @@ window.GameDrawManager = (() => {
                     break
             }
             deltaTime = (now - lastUpdate) / 1000
+            if (waitExitScene) {
+                runExitNodeFunc(waitExitScene)
+                waitExitScene = undefined
+            }
             drawToCanvas(canvasContext, deltaTime)
             lastUpdate = now
             if (runnable) {
