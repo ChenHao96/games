@@ -164,6 +164,7 @@ window.GameDrawManager = (() => {
     }
     let runnableId = undefined, runnable = false
     GameDrawManager.run = () => {
+        GameDrawManager.setClearStatus(GameDrawManager.ClearStatus.once)
         console.log("Provided by Steven Canvas. Version: 1.0.0")
         pushScene(splashScenes, splashScene)
         runnable = true

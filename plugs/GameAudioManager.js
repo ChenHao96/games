@@ -32,17 +32,19 @@ window.GameAudioManager = (() => {
             music.play()
         } else {
             waitPlayAudio.push(music)
-            document.addEventListener("click", function playVoice() {
-                document.removeEventListener("click", playVoice, false)
-                enableMedia = true
-                while (waitPlayAudio.length > 0) {
-                    waitPlayAudio.pop().play()
-                }
-            }, false)
         }
     }
     let audioIndex = 0, managerMuted = false
     const cacheSoundEffect = {}, playingAudio = {}, GameAudioManager = {}
+    GameAudioManager.activityAudio = function () {
+        document.addEventListener("click", function playVoice() {
+            document.removeEventListener("click", playVoice, false)
+            enableMedia = true
+            while (waitPlayAudio.length > 0) {
+                waitPlayAudio.pop().play()
+            }
+        }, false)
+    }
     GameAudioManager.playSoundEffect = function (name) {
         let audio = cacheSoundEffect[name]
         if (undefined === audio) {
