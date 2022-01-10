@@ -1,7 +1,16 @@
 window.GameDrawManager = (() => {
-
     const scenes = [], splashScenes = []
     const GameDrawManager = {ClearStatus: {once: "once", never: "never", every: "every"}}
+    const drawNodeFunc = (node, deltaTime, canvasContext) => {
+        if (node) {
+            node.runBefore()
+            node.update(deltaTime)
+            node.drawPicture(canvasContext)
+            node.foreachChild((item) => {
+                drawNodeFunc(item, deltaTime, canvasContext)
+            })
+        }
+    }
     const drawToCanvas = (canvasContext, deltaTime) => {
         let activityScenes = undefined
         if (splashScenes.length > 0) {
@@ -9,19 +18,18 @@ window.GameDrawManager = (() => {
         } else if (scenes.length > 0) {
             activityScenes = scenes[scenes.length - 1]
         }
-        if (activityScenes) {
-            activityScenes.runBefore()
-            activityScenes.update(deltaTime)
-            activityScenes.foreachChild((layout) => {
-                layout.runBefore()
-                layout.update(deltaTime)
-                layout.drawPicture(canvasContext)
-                layout.foreachChild((sprite) => {
-                    sprite.runBefore()
-                    sprite.update(deltaTime)
-                    sprite.drawPicture(canvasContext)
-                })
-            })
+        drawNodeFunc(activityScenes, deltaTime, canvasContext)
+    }
+    const initNodeFunc = (node) => {
+        if (node) {
+            node.init()
+            node.foreachChild(initNodeFunc)
+        }
+    }
+    const runExitNodeFunc = (node) => {
+        if (node) {
+            node.runExit()
+            node.foreachChild(runExitNodeFunc)
         }
     }
     const pushScene = function (array, scene) {
@@ -29,27 +37,13 @@ window.GameDrawManager = (() => {
             const worldSize = GameWorldManager.getWorldSize()
             scene.setWidth(worldSize.width)
             scene.setHeight(worldSize.height)
-            scene.init()
-            scene.foreachChild((layout) => {
-                layout.init()
-                layout.foreachChild((sprite) => {
-                    sprite.init()
-                })
-            })
+            initNodeFunc(scene)
             let lastScene = undefined
             if (array.length > 0) {
                 lastScene = array[array.length - 1]
             }
             array.push(scene)
-            if (lastScene) {
-                lastScene.runExit()
-                lastScene.foreachChild((layout) => {
-                    layout.runExit()
-                    layout.foreachChild((sprite) => {
-                        sprite.runExit()
-                    })
-                })
-            }
+            runExitNodeFunc(lastScene)
         }
     }
     GameDrawManager.pushScene = (scene) => {
@@ -58,14 +52,8 @@ window.GameDrawManager = (() => {
     const popScene = (array) => {
         if (array && array.length > 0) {
             const scene = array.pop()
+            runExitNodeFunc(scene)
             if (scene) {
-                scene.runExit()
-                scene.foreachChild((layout) => {
-                    layout.runExit()
-                    layout.foreachChild((sprite) => {
-                        sprite.runExit()
-                    })
-                })
                 return scene
             }
         }
