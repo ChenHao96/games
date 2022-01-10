@@ -16,9 +16,6 @@ framework.playEffect = (url, loop) => {
         GameAudioManager.playSoundEffect(url)
     }
 }
-framework.getWorldSize = () => {
-    return GameWorldManager.getWorldSize()
-}
 framework.getImageByFileName = (fileName) => {
     if (undefined === fileName || undefined === framework._resources) {
         return undefined
@@ -28,9 +25,16 @@ framework.getImageByFileName = (fileName) => {
 framework.run = (resources) => {
     framework._resources = resources
     GameDrawManager.run()
+    framework.clickEffect = ({detail}) => {
+        if ("clickDown" === detail.type) {
+            GameAudioManager.playSoundEffect("res/click")
+        }
+    }
+    window.addEventListener("GameScreenClick", framework.clickEffect, false)
 }
 framework.stop = () => {
     GameDrawManager.stop()
+    window.removeEventListener("GameScreenClick", framework.clickEffect, false)
 }
 framework.popScene = () => {
     const scene = GameDrawManager.popScene()
@@ -69,6 +73,9 @@ framework.pushScene = (scene) => {
 }
 framework.createNode = (node) => {
     node = node || {}
+    if (undefined === node.res) {
+        node.res = {}
+    }
     if (undefined === node.res2) {
         node.res2 = {}
     }
@@ -80,25 +87,33 @@ framework.createNode = (node) => {
             textSprite.setFontSize(node.fontSize)
             textSprite.setFontFamily(node.fontFamily)
             textSprite.setFontWeight(node.fontWeight)
+            textSprite.setRes = function (res) {
+                textSprite.setText(res)
+            }
             return textSprite
         }
         case "button": {
             const buttonSprite = new ButtonSprite(node.res.src, node.res2.src, node.onClick)
             buttonSprite.setPosition(node.x, node.y)
-            const fuc = buttonSprite.getButtonMovePosition.bind(buttonSprite)
-            buttonSprite.setScreenClickId(GameScreenClick.addClickItem(fuc))
             return buttonSprite
         }
         case "switch": {
             const switchSprite = new SwitchSprite(node.res.src, node.res2.src, node.onSwitch)
             switchSprite.setPosition(node.x, node.y)
-            const fuc = switchSprite.getButtonMovePosition.bind(switchSprite)
-            switchSprite.setScreenClickId(GameScreenClick.addClickItem(fuc))
             return switchSprite
         }
         default: {
             const imageSprite = new ImageSprite(node.res.src)
             imageSprite.setPosition(node.x, node.y)
+            imageSprite.setWidth(node.res.width)
+            imageSprite.setHeight(node.res.height)
+            imageSprite.setRes = function (res) {
+                if (null !== res) {
+                    imageSprite.setSrc(res.src)
+                } else {
+                    imageSprite.setPlaceholder(true)
+                }
+            }
             return imageSprite
         }
     }

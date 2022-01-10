@@ -38,6 +38,7 @@
     const resources = await loadResources("res/tetris.png", true)
     GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
     GameWorldManager.setWorldSize(960, 1440)
+    GameAudioManager.activityAudio()
     GameScreenClick.activityClick()
     framework.run(resources)
     const loadings = document.body.getElementsByClassName("loading")
@@ -61,7 +62,6 @@ Array.unique = function (array) {
     }
     return result
 }
-
 Array.prototype.unique = function () {
     const array = Array.unique(this)
     for (let i = 0; i < array.length; i++) {
@@ -123,26 +123,19 @@ GameOver.prototype.destroy = function () {
     this._drawNodes = []
     this._initialized_ = false
 }
-
 GameOver.prototype.init = function () {
     if (this._initialized_) {
         return
     }
     this._initialized_ = true
-
-    const worldSize = framework.getWorldSize()
     const bgImg = framework.getImageByFileName("msg_box.png")
-    const bgImgNode = framework.createNode({
-        res: bgImg, x: worldSize.width / 2, y: worldSize.height / 2
-    })
+    const bgImgNode = framework.createNode({res: bgImg, x: 0, y: 0})
     this._drawNodes.push(bgImgNode)
-
     const gameOverTextNode = framework.createNode({
         res: "GAME OVER", x: bgImgNode.x, y: bgImgNode.y - 160,
         type: "text", fontSize: 72, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(gameOverTextNode)
-
     const levelTextNode = framework.createNode({
         res: "LEVEL", x: bgImgNode.x - 150, y: gameOverTextNode.y + 80,
         type: "text", fontSize: 42, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
@@ -173,7 +166,6 @@ GameOver.prototype.init = function () {
         type: "text", fontSize: 32, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(this.totalScoreValueTextNode)
-
     const buttonHome = framework.getImageByFileName("but_home.png")
     const buttonNotNode = framework.createNode({
         res: buttonHome, x: bgImgNode.x - buttonHome.width * 1.5,
@@ -184,7 +176,6 @@ GameOver.prototype.init = function () {
         }
     })
     this._drawNodes.push(buttonNotNode)
-
     const buttonRestart = framework.getImageByFileName("but_restart.png")
     this.buttonRestartNode = framework.createNode({
         res: buttonRestart, x: bgImgNode.x + buttonHome.width * 1.5,
@@ -198,19 +189,15 @@ GameOver.prototype.init = function () {
     this._drawNodes.push(this.buttonRestartNode)
 }
 GameOver.prototype.before = function () {
-
     this._playButtonNodeScale = 1
     this._playButtonNodeDirection = 1
     this.buttonRestartNode.setScale(this._playButtonNodeScale)
-
     framework.playEffect("res/game_over")
 }
 GameOver.prototype.update = function (deltaTime) {
-
-    this.levelValueTextNode.res = Cube.level + ""
-    this.linesValueTextNode.res = Cube.lines + ""
-    this.totalScoreValueTextNode.res = Cube.totalScore + ""
-
+    this.levelValueTextNode.setRes(Cube.level + "")
+    this.linesValueTextNode.setRes(Cube.lines + "")
+    this.totalScoreValueTextNode.setRes(Cube.totalScore + "")
     if (this._playButtonNodeDirection === 1) {
         if (this._playButtonNodeScale > 1.2) {
             this._playButtonNodeDirection = -1
@@ -220,7 +207,6 @@ GameOver.prototype.update = function (deltaTime) {
             this._playButtonNodeDirection = 1
         }
     }
-
     this._playButtonNodeScale += this._playButtonNodeDirection * (deltaTime * 0.4)
     this.buttonRestartNode.setScale(this._playButtonNodeScale)
 }
@@ -233,37 +219,28 @@ GameExit.prototype.destroy = function () {
     this._drawNodes = []
     this._initialized_ = false
 }
-
 GameExit.prototype.init = function () {
-
     if (this._initialized_) {
         return
     }
     this._initialized_ = true
-
-    const worldSize = framework.getWorldSize()
     const bgImg = framework.getImageByFileName("msg_box.png")
-    const bgImgNode = framework.createNode({
-        res: bgImg, x: worldSize.width / 2, y: worldSize.height / 2
-    })
+    const bgImgNode = framework.createNode({res: bgImg, x: 0, y: 0})
     this._drawNodes.push(bgImgNode)
-
     const areYouSureTextNode = framework.createNode({
         res: "ARE YOU SURE?", x: bgImgNode.x, y: bgImgNode.y - 72,
         type: "text", fontSize: 64, fontWeight: "bold", fontFamily: "Georgia", fillStyle: "#f6d85f"
     })
     this._drawNodes.push(areYouSureTextNode)
-
     const buttonNot = framework.getImageByFileName("but_not.png")
     const buttonNotNode = framework.createNode({
         res: buttonNot, x: bgImgNode.x - buttonNot.width * 1.5,
-        y: worldSize.height / 2 + buttonNot.height * 0.8,
+        y: bgImgNode.y + buttonNot.height * 0.8,
         type: "button", onClick: function () {
             framework.popScene()
         }
     })
     this._drawNodes.push(buttonNotNode)
-
     const buttonYes = framework.getImageByFileName("but_yes.png")
     const buttonYesNode = framework.createNode({
         res: buttonYes, x: bgImgNode.x + buttonYes.width * 1.5,
@@ -288,22 +265,17 @@ GamePause.prototype.init = function () {
         return
     }
     this._initialized_ = true
-    const worldSize = framework.getWorldSize()
     const bgImg = framework.getImageByFileName("bg.jpg")
-    const bgImgNode = framework.createNode({
-        res: bgImg, x: worldSize.width / 2, y: worldSize.height / 2
-    })
+    const bgImgNode = framework.createNode({res: bgImg, x: 0, y: 0})
     this._drawNodes.push(bgImgNode)
     const pauseText = framework.getImageByFileName("pause_text.png")
     const pauseTextNode = framework.createNode({
-        res: pauseText, x: worldSize.width / 2,
-        y: worldSize.height / 2 - pauseText.height
+        res: pauseText, x: bgImgNode.x, y: bgImgNode.y - pauseText.height
     })
     this._drawNodes.push(pauseTextNode)
     const continueButton = framework.getImageByFileName("but_continue.png")
     const continueButtonNode = framework.createNode({
-        res: continueButton,
-        x: bgImgNode.x,
+        res: continueButton, x: bgImgNode.x,
         y: bgImgNode.y + continueButton.height,
         type: "button", onClick: function () {
             framework.popScene()
@@ -418,11 +390,9 @@ GameRunning.prototype.init = function () {
     this.currentCube.setOffset(4, 1)
     this._keyDownEvent_ = this.EventKeyDown.bind(this)
     document.addEventListener("keydown", this._keyDownEvent_, false)
-
-    const worldSize = framework.getWorldSize()
     const bgImg = framework.getImageByFileName("bg.jpg")
     const bgImgNode = framework.createNode({
-        res: bgImg, x: worldSize.width / 2, y: worldSize.height / 2
+        res: bgImg, x: 0, y: 0
     })
     this._drawNodes.push(bgImgNode)
     const logoMenu = framework.getImageByFileName("logo_menu-small.png")
@@ -503,7 +473,7 @@ GameRunning.prototype.init = function () {
     const margin = (bgImg.width - keyLeftButton.width * 2 - keyLeftButton.height * 2) / 5
     const keyLeftButtonNode = framework.createNode({
         res: keyLeftButton, y: frameBottomNode.y + frameBottom.height / 2 + keyLeftButton.height,
-        x: bgImgNode.x - bgImg.width / 2 + margin + keyLeftButton.width / 2,
+        x: -bgImg.width / 2 + margin + keyLeftButton.width / 2,
         type: "button", onClick: self.clickLeft.bind(self)
     })
     this._drawNodes.push(keyLeftButtonNode)
@@ -515,7 +485,7 @@ GameRunning.prototype.init = function () {
     const keyUpButton = framework.getImageByFileName("key-up.png")
     const keyUpButtonNode = framework.createNode({
         res: keyUpButton, y: keyLeftButtonNode.y,
-        x: keyLeftButtonNode.x + keyLeftButton.width + margin,
+        x: keyLeftButtonNode.x + margin + keyUpButton.width,
         type: "button", onClick: self.clickRotate.bind(self)
     })
     this._drawNodes.push(keyUpButtonNode)
@@ -527,7 +497,7 @@ GameRunning.prototype.init = function () {
     const keyRightButton = framework.getImageByFileName("key-right.png")
     const keyRightButtonNode = framework.createNode({
         res: keyRightButton, y: keyUpButtonNode.y,
-        x: keyUpButtonNode.x + keyUpButtonNode.width + margin,
+        x: keyUpButtonNode.x + margin + keyRightButton.width,
         type: "button", onClick: self.clickRight.bind(self)
     })
     this._drawNodes.push(keyRightButtonNode)
@@ -539,7 +509,7 @@ GameRunning.prototype.init = function () {
     const keyDownButton = framework.getImageByFileName("key-down.png")
     const keyDownButtonNode = framework.createNode({
         res: keyDownButton, y: keyRightButtonNode.y,
-        x: keyRightButtonNode.x + keyRightButton.width + margin,
+        x: keyRightButtonNode.x + margin + keyDownButton.width,
         type: "button", onClick: self.clickFast.bind(self)
     })
     this._drawNodes.push(keyDownButtonNode)
@@ -627,10 +597,10 @@ GameRunning.prototype.init = function () {
     }
     this._drawNodes.push(frameLeftNode)
 
-    this.nextCubeNode1 = framework.createNode()
-    this.nextCubeNode2 = framework.createNode()
-    this.nextCubeNode3 = framework.createNode()
-    this.nextCubeNode4 = framework.createNode()
+    this.nextCubeNode1 = framework.createNode({res: {width: cell.width, height: cell.height}})
+    this.nextCubeNode2 = framework.createNode({res: {width: cell.width, height: cell.height}})
+    this.nextCubeNode3 = framework.createNode({res: {width: cell.width, height: cell.height}})
+    this.nextCubeNode4 = framework.createNode({res: {width: cell.width, height: cell.height}})
 
     this._drawNodes.push(this.nextCubeNode4)
     this._drawNodes.push(this.nextCubeNode3)
@@ -655,20 +625,20 @@ GameRunning.prototype.setNextCubePosition = function (position, x, y) {
     const color = this.nextCube.getColor()
     const cell = framework.getImageByFileName(color + "-0.png")
     this.nextCubeNode1.setRes(cell)
-    this.nextCubeNode1.x = nextCubeNodeX + position[0].x * cell.width + (position[0].x * -1 * 11)
-    this.nextCubeNode1.y = nextCubeNodeY + position[0].y * cell.height + (position[0].y * -1 * 7)
+    this.nextCubeNode1.setX(nextCubeNodeX + position[0].x * cell.width + (position[0].x * -1 * 11))
+    this.nextCubeNode1.setY(nextCubeNodeY + position[0].y * cell.height + (position[0].y * -1 * 7))
 
     this.nextCubeNode2.setRes(cell)
-    this.nextCubeNode2.x = nextCubeNodeX + position[1].x * cell.width + (position[1].x * -1 * 11)
-    this.nextCubeNode2.y = nextCubeNodeY + position[1].y * cell.height + (position[1].y * -1 * 7)
+    this.nextCubeNode2.setX(nextCubeNodeX + position[1].x * cell.width + (position[1].x * -1 * 11))
+    this.nextCubeNode2.setY(nextCubeNodeY + position[1].y * cell.height + (position[1].y * -1 * 7))
 
     this.nextCubeNode3.setRes(cell)
-    this.nextCubeNode3.x = nextCubeNodeX + position[2].x * cell.width + (position[2].x * -1 * 11)
-    this.nextCubeNode3.y = nextCubeNodeY + position[2].y * cell.height + (position[2].y * -1 * 7)
+    this.nextCubeNode3.setX(nextCubeNodeX + position[2].x * cell.width + (position[2].x * -1 * 11))
+    this.nextCubeNode3.setY(nextCubeNodeY + position[2].y * cell.height + (position[2].y * -1 * 7))
 
     this.nextCubeNode4.setRes(cell)
-    this.nextCubeNode4.x = nextCubeNodeX + position[3].x * cell.width + (position[3].x * -1 * 11)
-    this.nextCubeNode4.y = nextCubeNodeY + position[3].y * cell.height + (position[3].y * -1 * 7)
+    this.nextCubeNode4.setX(nextCubeNodeX + position[3].x * cell.width + (position[3].x * -1 * 11))
+    this.nextCubeNode4.setY(nextCubeNodeY + position[3].y * cell.height + (position[3].y * -1 * 7))
 }
 GameRunning.prototype.update = function (deltaTime) {
 
@@ -680,9 +650,9 @@ GameRunning.prototype.update = function (deltaTime) {
         return
     }
 
-    this.levelValueTextNode.res = Cube.level + ""
-    this.linesValueTextNode.res = Cube.lines + ""
-    this.totalScoreValueTextNode.res = Cube.totalScore + ""
+    this.levelValueTextNode.setRes(Cube.level + "")
+    this.linesValueTextNode.setRes(Cube.lines + "")
+    this.totalScoreValueTextNode.setRes(Cube.totalScore + "")
 
     this.runTime += deltaTime
     if (this.runTime >= this.moveSpeed) {
@@ -815,7 +785,6 @@ GameRunning.prototype.clickLeft = function () {
     if (this.currentArrayCubeLock) {
         return
     }
-
     if (this.currentCube.setOffsetX(-1)) {
         this.currentArrayCubeLock = true
     }
@@ -855,7 +824,6 @@ GameRunning.prototype.EventKeyDown = function (e) {
             break;
     }
 }
-
 Cube.array2List = []
 Cube.cubeTypes = [
     {
