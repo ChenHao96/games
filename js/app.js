@@ -1,3 +1,54 @@
+(async function () {
+    function loadResources(url, split) {
+        return new Promise((resolve, reject) => {
+            const img = new Image()
+            img.src = url
+            img.onerror = function () {
+                reject("资源加载失败!")
+            }
+            img.onload = function () {
+                if (split) {
+                    const xhr = new XMLHttpRequest()
+                    xhr.responseType = "json"
+                    xhr.withCredentials = true
+                    xhr.overrideMimeType('application/json')
+                    xhr.onload = async () => {
+                        if (xhr.status === 200) {
+                            const resources = {}
+                            const picture = new PictureUtil(this)
+                            const array = xhr.response.frames
+                            for (let i = 0; i < array.length; i++) {
+                                const image = await picture.cutPicture(array[i])
+                                resources[image.alt] = image
+                            }
+                            resolve(resources)
+                        } else if (xhr.status === 404) {
+                            reject("图片分割失败")
+                        }
+                    }
+                    xhr.open("GET", this.src.substr(0, this.src.lastIndexOf('.')) + ".json")
+                    xhr.send()
+                } else {
+                    resolve(this)
+                }
+            }
+        })
+    }
+
+    const resources = await loadResources("res/tetris.png", true)
+    GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
+    GameWorldManager.setWorldSize(960, 1440)
+    GameScreenClick.activityClick()
+    framework.run(resources)
+    const loadings = document.body.getElementsByClassName("loading")
+    if (loadings && loadings.length > 0) {
+        for (let i = 0; i < loadings.length; i++) {
+            document.body.removeChild(loadings[i])
+        }
+    }
+    framework.pushScene(new Application())
+})()
+
 Array.unique = function (array) {
     const obj = {}
     for (let i = 0; i < array.length; i++) {
@@ -58,10 +109,10 @@ Application.prototype.init = function () {
     })
     this._drawNodes.push(startButtonNode)
     const startButtonTextNode = framework.createNode({
-        res: "Start Game", x: startButtonNode.x, y: startButtonNode.y + 37,
+        res: "Start Game", x: bgImgNode.x, y: bgImgNode.y,
         type: "text", fontSize: 52, fontFamily: "Georgia"
     })
-    this._drawNodes.push(startButtonTextNode)
+    startButtonNode.addChild(startButtonTextNode)
 }
 
 function GameOver() {
@@ -1067,65 +1118,3 @@ Cube.prototype.cubeCrossY = function (y) {
     const value = this.currentArrayCube(0, y, this.rotate)
     return this.item.moveY_XOR[this.rotate] !== value
 }
-
-async function gameStart(canvasElement, canvasContext, loadResources) {
-
-    const resources = await loadResources("res/tetris.png", true)
-    await framework.run(canvasElement, canvasContext, resources)
-    framework.pushScene(new Application())
-
-    const img = resources["favicon.ico"]
-    img.alt = "俄罗斯方块-欣欣专享"
-    return resources
-}
-
-(async function () {
-    function loadResources(url, split) {
-        return new Promise((resolve, reject) => {
-            const img = new Image()
-            img.src = url
-            img.onerror = function () {
-                reject("资源加载失败!")
-            }
-            img.onload = function () {
-                if (split) {
-                    const xhr = new XMLHttpRequest()
-                    xhr.responseType = "json"
-                    xhr.withCredentials = true
-                    xhr.overrideMimeType('application/json')
-                    xhr.onload = async () => {
-                        if (xhr.status === 200) {
-                            const resources = {}
-                            const picture = new PictureUtil(this)
-                            const array = xhr.response.frames
-                            for (let i = 0; i < array.length; i++) {
-                                const image = await picture.cutPicture(array[i])
-                                resources[image.alt] = image
-                            }
-                            resolve(resources)
-                        } else if (xhr.status === 404) {
-                            reject("图片分割失败")
-                        }
-                    }
-                    xhr.open("GET", this.src.substr(0, this.src.lastIndexOf('.')) + ".json")
-                    xhr.send()
-                } else {
-                    resolve(this)
-                }
-            }
-        })
-    }
-
-    const resources = await loadResources("res/tetris.png", true)
-    GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
-    GameWorldManager.setWorldSize(960, 1706)
-    GameScreenClick.activityClick()
-    framework.run(resources)
-    const loadings = document.body.getElementsByClassName("loading")
-    if (loadings && loadings.length > 0) {
-        for (let i = 0; i < loadings.length; i++) {
-            document.body.removeChild(loadings[i])
-        }
-    }
-    framework.pushScene(new Application())
-})()
