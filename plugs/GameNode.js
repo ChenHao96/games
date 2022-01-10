@@ -498,7 +498,7 @@ const SwitchSprite = ((_super) => {
             this.onSwitch = (value) => {
             }
         }
-        this.setSwitch(true)
+        this._switch_ = true
         return _this
     }
 
@@ -590,16 +590,12 @@ const ButtonSprite = ((_super) => {
         this.clickUp()
     }
     ButtonSprite.prototype.clickUp = function () {
-        if (undefined === this._clicked) {
-            this.setScale(1)
-        } else {
-            this._image = this._notClick
-        }
+        this.setScale(1)
+        this._image = this._notClick
     }
     ButtonSprite.prototype.clickDown = function () {
-        if (undefined === this._clicked) {
-            this.setScale(0.95)
-        } else {
+        this.setScale(0.95)
+        if (this._clicked) {
             this._image = this._clicked
         }
     }
