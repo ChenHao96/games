@@ -83,7 +83,6 @@ Application.prototype.before = function () {
     const img = framework._resources["favicon.ico"]
     GameDrawManager.setTitle("俄罗斯方块-欣欣专享")
     GameDrawManager.setFavicon(img.src)
-    framework.playEffect("res/soundtrack", true)
 }
 Application.prototype.init = function () {
     if (this._initialized_) {
@@ -199,7 +198,7 @@ GameOver.prototype.update = function (deltaTime) {
     this.linesValueTextNode.setRes(Cube.lines + "")
     this.totalScoreValueTextNode.setRes(Cube.totalScore + "")
     if (this._playButtonNodeDirection === 1) {
-        if (this._playButtonNodeScale > 1.2) {
+        if (this._playButtonNodeScale > 1.1) {
             this._playButtonNodeDirection = -1
         }
     } else {
@@ -207,7 +206,7 @@ GameOver.prototype.update = function (deltaTime) {
             this._playButtonNodeDirection = 1
         }
     }
-    this._playButtonNodeScale += this._playButtonNodeDirection * (deltaTime * 0.4)
+    this._playButtonNodeScale += this._playButtonNodeDirection * (deltaTime * 0.15)
     this.buttonRestartNode.setScale(this._playButtonNodeScale)
 }
 
@@ -307,6 +306,7 @@ GameMain.prototype.init = function () {
         return
     }
     this._initialized_ = true
+    framework.playEffect("res/soundtrack", true)
     const bgImg = framework.getImageByFileName("bg.jpg")
     const bgImgNode = framework.createNode({
         res: bgImg, x: 0, y: 0
@@ -328,13 +328,6 @@ GameMain.prototype.init = function () {
         res: logoMenu, x: bgImgNode.x,
         y: bgImgNode.y - logoMenu.height / 2
     })
-    this._logoMenuRebound = new Rebound()
-    this._logoMenuRebound.setRotation(0)
-    this._logoMenuRebound.setQuality(10)
-    this._logoMenuRebound.setSize({width: logoMenu.width, height: logoMenu.height})
-    this._logoMenuRebound.setEndPosition({x: this.logoMenuNode.x, y: this.logoMenuNode.y})
-    this._logoMenuRebound.setBeginPosition({x: bgImgNode.x, y: bgImgNode.y - bgImg.height / 2 - logoMenu.height / 2})
-    this._logoMenuRebound.init()
     this._drawNodes.push(this.logoMenuNode)
     const playButton = framework.getImageByFileName("but_play.png")
     this.playButtonNode = framework.createNode({
@@ -347,7 +340,7 @@ GameMain.prototype.init = function () {
 }
 GameMain.prototype.update = function (deltaTime) {
     if (this._playButtonNodeDirection === 1) {
-        if (this._playButtonNodeScale > 1.2) {
+        if (this._playButtonNodeScale > 1.1) {
             this._playButtonNodeDirection = -1
         }
     } else {
@@ -355,11 +348,8 @@ GameMain.prototype.update = function (deltaTime) {
             this._playButtonNodeDirection = 1
         }
     }
-    this._playButtonNodeScale += this._playButtonNodeDirection * (deltaTime * 0.4)
+    this._playButtonNodeScale += this._playButtonNodeDirection * (deltaTime * 0.1)
     this.playButtonNode.setScale(this._playButtonNodeScale)
-    const position = this._logoMenuRebound.getCurrentPosition(deltaTime * 30)
-    this.logoMenuNode.y = position.y
-    this.logoMenuNode.x = position.x
     GameDrawManager.setClearStatus(GameDrawManager.ClearStatus.once)
 }
 
@@ -525,7 +515,9 @@ GameRunning.prototype.init = function () {
         x: bgImgNode.x + bgImg.width / 2 - exitButton.width,
         y: bgImgNode.y - bgImg.height / 2 + exitButton.height,
         type: "button", onClick: function () {
-            framework.pushScene(new GameExit())
+            setTimeout(() => {
+                framework.pushScene(new GameExit())
+            }, 100)
         }
     })
     this._drawNodes.push(exitButtonNode)
