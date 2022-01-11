@@ -204,7 +204,7 @@ window.GameDrawManager = (() => {
         }
     }
     GameDrawManager.preload = function (resources, callback) {
-        let waitCount = 1, finishCount = 0
+        let waitCount = 1, finishCount = 0, resObj = {}
         const preloadScene = new GameScene()
         preloadScene._init = function () {
             const colorLayout = new ColorLayout()
@@ -224,11 +224,14 @@ window.GameDrawManager = (() => {
                 this.providedText.setX(this.imageSprite.getX())
                 this.providedText.setY(this.imageSprite.getHeight() / 2 + this.providedText.getHeight())
             }
-            colorLayout.update = function (deltaTime) {
+            colorLayout.update = function () {
                 if (finishCount === waitCount) {
                     this.providedText.setText("Loading: 100%")
                     GameDrawManager.setClearStatus(GameDrawManager.ClearStatus.once)
                     popScene(splashScenes)
+                    if (callback && typeof callback === "function") {
+                        callback(resObj)
+                    }
                 } else {
                     this.providedText.setText("Loading: " + Math.floor(finishCount * 10000 / waitCount) / 100 + "%...")
                 }
@@ -249,12 +252,26 @@ window.GameDrawManager = (() => {
                     const img = new Image()
                     img.src = item.img
                     img.onload = function () {
-
                         finishCount += 1
-
-                        // TODO: 做图片分割
-
-                        FramePicture(this,)
+                        const xhr = new XMLHttpRequest()
+                        xhr.responseType = "json"
+                        xhr.withCredentials = true
+                        xhr.overrideMimeType('application/json')
+                        xhr.onload = () => {
+                            if (xhr.status === 200) {
+                                const array = xhr.response.frames
+                                if (array && array.length > 0) {
+                                    waitCount += array.length
+                                    for (let j = 0; j < array.length; j++) {
+                                        const item = array[j]
+                                        resObj[item.filename] = FramePicture(this, item)
+                                        finishCount += 1
+                                    }
+                                }
+                            }
+                        }
+                        xhr.open("GET", item.frames)
+                        xhr.send()
                     }
                 }
             }
