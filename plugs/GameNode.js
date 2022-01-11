@@ -222,6 +222,7 @@ const GameLayout = ((_super) => {
 })(DrawPicture)
 const Color = (() => {
     function Color(r, g, b) {
+        this.alpha = 1
         this.red = this.green = this.blue = 0
         this.setRed(r)
         this.setGreen(g)
@@ -293,6 +294,8 @@ const ImageLayout = ((_super) => {
                 this._image = new Image()
             }
             this._image.src = src
+            this.setWidth(this._image.width)
+            this.setHeight(this._image.height)
         }
     }
     ImageLayout.prototype._drawPicture = function (canvasContext, x, y) {

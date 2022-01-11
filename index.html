@@ -19,6 +19,16 @@
         GameAudioManager.activityAudio()
         GameScreenClick.activityClick()
         GameDrawManager.run()
+
+        const imageLayout = new ImageLayout()
+        imageLayout._init = function () {
+
+        }
+        const gameScene = new GameScene()
+        gameScene._init = function () {
+            this.addChild(imageLayout)
+        }
+        GameDrawManager.pushScene(gameScene)
     })()
 </script>
 </body>

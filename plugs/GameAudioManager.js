@@ -52,6 +52,7 @@ window.GameAudioManager = (() => {
             delete playingAudio[index]
         }
         appendAudio.volume = effectsVolume
+        // TODO: safari 不能多音频播放
         playMusic(appendAudio)
     }
     let cacheBackgroundMusic = undefined, actionPause = false
