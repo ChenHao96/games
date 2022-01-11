@@ -1,2 +1,2 @@
 # games
-web 游戏开发集合
+tetris: 俄罗斯方块
