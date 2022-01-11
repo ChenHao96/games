@@ -248,11 +248,13 @@ window.GameDrawManager = (() => {
                 } else if (typeof item === "object") {
                     const img = new Image()
                     img.src = item.img
-                    waitCount += 1
                     img.onload = function () {
+
                         finishCount += 1
+
                         // TODO: 做图片分割
 
+                        FramePicture(this,)
                     }
                 }
             }
