@@ -1,28 +1,19 @@
 window.GameAudioManager = (() => {
+    const audioTypes = [{type: "audio/ogg", suffix: ".ogg"}, {type: "audio/mpeg", suffix: ".mp3"}]
     const createAudioControl = (name) => {
         const audio = document.createElement("audio")
         cacheSoundEffect[name] = audio
         audio.controls = true
+        audio.preload = "auto"
+        audio.autoplay = false
         audio.className = "audio-controls"
-        const source2 = document.createElement("source")
-        source2.src = name + ".ogg"
-        source2.type = "audio/ogg"
-        audio.appendChild(source2)
-        const source = document.createElement("source")
-        source.src = name + ".mp3"
-        source.type = "audio/mpeg"
-        audio.appendChild(source)
-        const source3 = document.createElement("source")
-        source3.src = name + ".acc"
-        source3.type = "audio/acc"
-        audio.appendChild(source3)
-        const source4 = document.createElement("source")
-        source4.src = name + ".wav"
-        source4.type = "audio/wav"
-        audio.appendChild(source4)
-        const embed = document.createElement("embed")
-        embed.src = name + ".mp3"
-        audio.appendChild(embed)
+        for (let i = 0; i < audioTypes.length; i++) {
+            const type = audioTypes[i]
+            const source = document.createElement("source")
+            source.src = name + type.suffix
+            source.type = type.type
+            audio.appendChild(source)
+        }
         return audio
     }
     let enableMedia = false
@@ -59,29 +50,25 @@ window.GameAudioManager = (() => {
         playingAudio[index] = appendAudio
         appendAudio.onended = function () {
             delete playingAudio[index]
-            document.body.removeChild(this)
         }
-        document.body.appendChild(appendAudio)
         appendAudio.volume = effectsVolume
         playMusic(appendAudio)
     }
-    let cacheBackgroundMusic = undefined
+    let cacheBackgroundMusic = undefined, actionPause = false
     GameAudioManager.setBackgroundMusic = function (name) {
         if (cacheBackgroundMusic) {
             cacheBackgroundMusic.pause()
-            document.body.removeChild(cacheBackgroundMusic)
         }
         cacheBackgroundMusic = cacheSoundEffect[name]
         if (undefined === cacheBackgroundMusic) {
             cacheBackgroundMusic = createAudioControl(name)
-            cacheBackgroundMusic.onended = function () {
-                if (this.loop) {
+            cacheBackgroundMusic.onpause = function () {
+                if (this.loop && !actionPause) {
                     this.play()
                 }
             }
         }
         cacheBackgroundMusic.loop = true
-        document.body.appendChild(cacheBackgroundMusic)
         cacheBackgroundMusic.volume = backgroundVolume
         playMusic(cacheBackgroundMusic)
     }
