@@ -41,13 +41,13 @@
     GameAudioManager.activityAudio()
     GameScreenClick.activityClick()
     framework.run(resources)
+    framework.pushScene(new Application())
     const loadings = document.body.getElementsByClassName("loading")
     if (loadings && loadings.length > 0) {
         for (let i = 0; i < loadings.length; i++) {
             document.body.removeChild(loadings[i])
         }
     }
-    framework.pushScene(new Application())
 })()
 
 Array.unique = function (array) {
