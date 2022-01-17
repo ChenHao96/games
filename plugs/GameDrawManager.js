@@ -169,7 +169,7 @@ window.GameDrawManager = (() => {
     }
     let runnableId = undefined, runnable = false
     GameDrawManager.run = () => {
-        console.log("Provided by Steven Canvas. Version: 1.0.1")
+        console.log("Provided by Steven Canvas. Version: 1.1.0")
         pushScene(splashScenes, splashScene)
         runnable = true
         const initFps = 1000 / managerFps
@@ -252,7 +252,6 @@ window.GameDrawManager = (() => {
                     const img = new Image()
                     img.src = item.img
                     img.onload = function () {
-                        finishCount += 1
                         const xhr = new XMLHttpRequest()
                         xhr.responseType = "json"
                         xhr.withCredentials = true
@@ -268,6 +267,7 @@ window.GameDrawManager = (() => {
                                         finishCount += 1
                                     }
                                 }
+                                finishCount += 1
                             }
                         }
                         xhr.open("GET", item.frames)
