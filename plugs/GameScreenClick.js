@@ -1,5 +1,5 @@
 window.GameScreenClick = (() => {
-    const getPointOnCanvas = (canvas, x, y, item) => {
+    const getPointOnCanvas = (canvas, x, y) => {
         const bbox = canvas.getBoundingClientRect()
         const position = {x: x / bbox.width * canvas.width, y: y / bbox.height * canvas.height}
         switch (GameWorldManager.getDirection()) {
@@ -16,94 +16,66 @@ window.GameScreenClick = (() => {
                 }
                 break
             default:
-                return false
+                return undefined
         }
-        if (position.x >= item.beginX && position.x <= item.endX) {
-            if (position.y >= item.beginY && position.y <= item.endY) {
-                return true
-            }
-        }
-        return false
+        return position
     }
-    let clickId = 0
-    const GameScreenClick = {}, list = {}
-    GameScreenClick.clearClicks = function () {
-        list.length = 0
-    }
-    GameScreenClick.addClickItem = function (postFunc) {
-        const id = (++clickId) + ""
-        list[id] = postFunc
-        return id
-    }
-    GameScreenClick.removeClickItem = function (clickId) {
-        delete list[clickId]
-    }
+    const GameScreenClick = {}
     GameScreenClick.activityClick = function () {
-        let lastHovered = undefined
+        const lastPoint = {x: -1, y: -1}
         const canvas = GameWorldManager.getWorldCanvas()
         canvas.onmousemove = (e) => {
-            for (let itemId in list) {
-                const item = list[itemId]()
-                if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                    if (itemId !== lastHovered) {
-                        lastHovered = itemId
-                        window.dispatchEvent(new CustomEvent('GameScreenClick', {
-                            detail: {
-                                type: "hovered",
-                                id: itemId
-                            }
-                        }))
+            const point = getPointOnCanvas(e.target, e.offsetX, e.offsetY)
+            if (undefined !== point) {
+                window.dispatchEvent(new CustomEvent('GameScreenClick', {
+                    detail: {
+                        type: "hovered",
+                        point: point
                     }
-                } else {
-                    if (lastHovered === itemId) {
-                        window.dispatchEvent(new CustomEvent('GameScreenClick', {
-                            detail: {
-                                type: "leaved",
-                                id: itemId
-                            }
-                        }))
-                        lastHovered = undefined
-                    }
+                }))
+                if (lastPoint.x > 0 && lastPoint.y > 0) {
+                    window.dispatchEvent(new CustomEvent('GameScreenClick', {
+                        detail: {
+                            type: "leaved",
+                            point: lastPoint
+                        }
+                    }))
                 }
+                lastPoint.x = point.x
+                lastPoint.y = point.y
             }
         }
         canvas.onmousedown = (e) => {
-            for (let itemId in list) {
-                const item = list[itemId]()
-                if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                    window.dispatchEvent(new CustomEvent('GameScreenClick', {
-                        detail: {
-                            type: "clickDown",
-                            id: itemId
-                        }
-                    }))
-                }
+            const point = getPointOnCanvas(e.target, e.offsetX, e.offsetY)
+            if (undefined !== point) {
+                window.dispatchEvent(new CustomEvent('GameScreenClick', {
+                    detail: {
+                        type: "clickDown",
+                        point: point
+                    }
+                }))
             }
         }
         canvas.onmouseup = (e) => {
-            for (let itemId in list) {
-                const item = list[itemId]()
-                if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                    window.dispatchEvent(new CustomEvent('GameScreenClick', {
-                        detail: {
-                            type: "clickUp",
-                            id: itemId
-                        }
-                    }))
-                }
+            const point = getPointOnCanvas(e.target, e.offsetX, e.offsetY)
+            if (undefined !== point) {
+                window.dispatchEvent(new CustomEvent('GameScreenClick', {
+                    detail: {
+                        type: "clickUp",
+                        point: point
+                    }
+                }))
             }
         }
         canvas.onclick = (e) => {
-            for (let itemId in list) {
-                const item = list[itemId]()
-                if (getPointOnCanvas(e.target, e.offsetX, e.offsetY, item)) {
-                    window.dispatchEvent(new CustomEvent('GameScreenClick', {
-                        detail: {
-                            type: "clicked",
-                            id: itemId
-                        }
-                    }))
-                }
+            const point = getPointOnCanvas(e.target, e.offsetX, e.offsetY)
+            if (undefined !== point) {
+                window.dispatchEvent(new CustomEvent('GameScreenClick', {
+                    detail: {
+                        type: "clicked",
+                        point: point
+                    }
+                }))
             }
         }
     }

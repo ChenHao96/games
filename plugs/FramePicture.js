@@ -4,27 +4,25 @@ window.FramePicture = (() => {
     const formatPosition = (position) => {
         const result = {
             mirror: 0,
+            scale: {w: 1, h: 1},
             trimmed: position.trimmed,
             rotated: position.rotated,
-            scale: {w: 1, h: 1},
             frame: {x: position.frame.x, y: position.frame.y},
-            spriteSourceSize: {w: position.spriteSourceSize.w, h: position.spriteSourceSize.h},
-            sourceSize: {w: position.sourceSize.w, h: position.sourceSize.h}
+            sourceSize: {w: position.sourceSize.w, h: position.sourceSize.h},
+            spriteSourceSize: {w: position.spriteSourceSize.w, h: position.spriteSourceSize.h}
         }
-        if (undefined !== position.mirror) {
+        if (typeof position.mirror === 'number') {
             result.mirror = position.mirror
         }
-        if (undefined !== position.scale) {
-            if (typeof position.scale === 'number') {
-                result.scale.w = position.scale
-                result.scale.h = position.scale
-            } else {
-                if (undefined !== position.scale.w) {
-                    result.scale.w = position.scale.w
-                }
-                if (undefined !== position.scale.h) {
-                    result.scale.h = position.scale.h
-                }
+        if (typeof position.scale === 'number') {
+            result.scale.w = position.scale
+            result.scale.h = position.scale
+        } else if (typeof position.scale === 'object') {
+            if (typeof position.scale.w === 'number') {
+                result.scale.w = position.scale.w
+            }
+            if (typeof position.scale.h === 'number') {
+                result.scale.h = position.scale.h
             }
         }
         return result
@@ -58,15 +56,15 @@ window.FramePicture = (() => {
         }
         if (position.mirror > 0) {
             switch (position.mirror) {
-                case 1:
+                case 1:// 上下镜像
                     dy -= height
                     context.scale(1, -1)
                     break;
-                case 2:
+                case 2:// 左右镜像
                     dx -= width
                     context.scale(-1, 1)
                     break;
-                case 3:
+                case 3:// 对角镜像
                     dx -= width
                     dy -= height
                     context.scale(-1, -1)
