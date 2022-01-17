@@ -20,8 +20,6 @@
         GameAudioManager.activityAudio()
         GameScreenClick.activityClick()
         GameDrawManager.run()
-        GameScreenClick.addClickItem(() => {return {beginX: 0, beginY: 0, endX: 300, endY: 300}})
-        GameScreenClick.addClickItem(() => {return {beginX: 400, beginY: 0, endX: 700, endY: 300}})
         window.addEventListener("GameScreenClick", function ({detail}) {console.log(detail)})
     })()
 </script>
