@@ -24,16 +24,9 @@ framework.getImageByFileName = (fileName) => {
 }
 framework.run = (resources) => {
     framework._resources = resources
-    // framework.clickEffect = ({detail}) => {
-    //     if ("clickDown" === detail.type) {
-    //         GameAudioManager.playSoundEffect("res/click")
-    //     }
-    // }
-    // window.addEventListener("GameScreenClick", framework.clickEffect, false)
 }
 framework.stop = () => {
     GameDrawManager.stop()
-    // window.removeEventListener("GameScreenClick", framework.clickEffect, false)
 }
 framework.popScene = () => {
     const scene = GameDrawManager.popScene()
