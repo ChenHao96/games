@@ -427,6 +427,9 @@ const ImageSprite = ((_super) => {
     }
     return ImageSprite
 })(GameSprite)
+
+
+
 const Button = ((_super) => {
     __extends(Button, _super)
 
@@ -447,6 +450,7 @@ const Button = ((_super) => {
     }
     Button.prototype.leaved = function () {
     }
+
     Button.prototype._runBefore = function () {
         this.clickId = GameScreenClick.addClickItem(() => {
             const scale = this.getScale()
@@ -458,6 +462,7 @@ const Button = ((_super) => {
             result.endY = result.beginY + height
             return result
         })
+        // TODO: bug
         this.eventListener = ({detail}) => {
             if (this.clickId === detail.id) {
                 switch (detail.type) {
@@ -487,6 +492,9 @@ const Button = ((_super) => {
     }
     return Button
 })(GameSprite)
+
+
+
 const SwitchSprite = ((_super) => {
     __extends(SwitchSprite, _super)
 

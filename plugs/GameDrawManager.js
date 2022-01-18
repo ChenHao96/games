@@ -3,6 +3,7 @@ window.GameDrawManager = (() => {
     const GameDrawManager = {ClearStatus: {once: "once", never: "never", every: "every"}}
     const drawNodeFunc = (node, deltaTime, canvasContext) => {
         if (node) {
+            node.init()
             node.runBefore()
             node.update(deltaTime)
             node.drawPicture(canvasContext)
@@ -20,26 +21,12 @@ window.GameDrawManager = (() => {
         }
         drawNodeFunc(activityScenes, deltaTime, canvasContext)
     }
-    const initNodeFunc = (node) => {
-        if (node) {
-            node.init()
-            node.foreachChild(initNodeFunc)
-        }
-    }
-    const runExitNodeFunc = (node) => {
-        if (node) {
-            node.runExit()
-            node.foreachChild(runExitNodeFunc)
-        }
-    }
     const waitExitScenes = []
     const pushScene = function (array, scene) {
         if (scene instanceof GameScene) {
             const worldSize = GameWorldManager.getWorldSize()
             scene.setWidth(worldSize.width)
             scene.setHeight(worldSize.height)
-            // TODO: 刚pop又push同一个就会有问题
-            initNodeFunc(scene)
             array.push(scene)
             waitExitScenes.push(array[array.length - 2])
         }
@@ -102,7 +89,6 @@ window.GameDrawManager = (() => {
     }
     const worldScale = () => {
         let textScale = 1
-
         const worldDirection = GameWorldManager.getDirection()
         if (GameWorldManager.Direction.portraiture === worldDirection) {
             const baseWidth = GameWorldManager.getWorldSize().width
@@ -169,33 +155,33 @@ window.GameDrawManager = (() => {
     }
     let runnableId = undefined, runnable = false
     GameDrawManager.run = () => {
-        console.log("Provided by Steven Canvas. Version: 1.1.0")
-        pushScene(splashScenes, splashScene)
-        runnable = true
-        const initFps = 1000 / managerFps
-        let deltaTime = 0, lastUpdate = Date.now()
-        const canvas = GameWorldManager.getWorldCanvas(), canvasContext = canvas.getContext('2d')
-        runnableId = setTimeout(function timeoutFunc() {
-            const now = Date.now()
-            switch (viewClearStatus) {
-                case GameDrawManager.ClearStatus.once:
-                    viewClearStatus = GameDrawManager.ClearStatus.never
-                // noinspection FallThroughInSwitchStatementJS
-                case GameDrawManager.ClearStatus.every:
-                    canvasContext.clearRect(0, 0, canvas.width, canvas.height)
-                    break
-            }
-            deltaTime = (now - lastUpdate) / 1000
-            while (waitExitScenes.length > 0) {
-                runExitNodeFunc(waitExitScenes.pop())
-            }
-            drawToCanvas(canvasContext, deltaTime)
-            lastUpdate = now
-            if (runnable) {
-                const timeout = 1000 / managerFps - (Date.now() - now)
-                runnableId = setTimeout(timeoutFunc, timeout)
-            }
-        }, initFps)
+        if (!runnable) {
+            runnable = true
+            console.log("Provided by Steven Canvas. Version: 1.1.0")
+            pushScene(splashScenes, splashScene)
+            const initFps = 1000 / managerFps
+            let lastUpdate = Date.now()
+            const canvas = GameWorldManager.getWorldCanvas(), canvasContext = canvas.getContext('2d')
+            const runExitNodeFunc = (node) => {if (node) {node.runExit();node.foreachChild(runExitNodeFunc)}}
+            runnableId = setTimeout(function timeoutFunc() {
+                const now = Date.now()
+                switch (viewClearStatus) {
+                    case GameDrawManager.ClearStatus.once:
+                        viewClearStatus = GameDrawManager.ClearStatus.never
+                    // noinspection FallThroughInSwitchStatementJS
+                    case GameDrawManager.ClearStatus.every:
+                        canvasContext.clearRect(0, 0, canvas.width, canvas.height)
+                        break
+                }
+                while (waitExitScenes.length > 0) {runExitNodeFunc(waitExitScenes.pop())}
+                drawToCanvas(canvasContext, (now - lastUpdate) / 1000)
+                lastUpdate = now
+                if (runnable) {
+                    const timeout = 1000 / managerFps - (Date.now() - now)
+                    runnableId = setTimeout(timeoutFunc, timeout)
+                }
+            }, initFps)
+        }
     }
     GameDrawManager.stop = () => {
         runnable = false
