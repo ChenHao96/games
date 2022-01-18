@@ -24,17 +24,16 @@ framework.getImageByFileName = (fileName) => {
 }
 framework.run = (resources) => {
     framework._resources = resources
-    GameDrawManager.run()
-    framework.clickEffect = ({detail}) => {
-        if ("clickDown" === detail.type) {
-            GameAudioManager.playSoundEffect("res/click")
-        }
-    }
-    window.addEventListener("GameScreenClick", framework.clickEffect, false)
+    // framework.clickEffect = ({detail}) => {
+    //     if ("clickDown" === detail.type) {
+    //         GameAudioManager.playSoundEffect("res/click")
+    //     }
+    // }
+    // window.addEventListener("GameScreenClick", framework.clickEffect, false)
 }
 framework.stop = () => {
     GameDrawManager.stop()
-    window.removeEventListener("GameScreenClick", framework.clickEffect, false)
+    // window.removeEventListener("GameScreenClick", framework.clickEffect, false)
 }
 framework.popScene = () => {
     const scene = GameDrawManager.popScene()
