@@ -222,6 +222,7 @@ const GameLayout = ((_super) => {
 })(DrawPicture)
 const Color = (() => {
     function Color(r, g, b) {
+        this.alpha = 1
         this.red = this.green = this.blue = 0
         this.setRed(r)
         this.setGreen(g)
@@ -293,6 +294,8 @@ const ImageLayout = ((_super) => {
                 this._image = new Image()
             }
             this._image.src = src
+            this.setWidth(this._image.width)
+            this.setHeight(this._image.height)
         }
     }
     ImageLayout.prototype._drawPicture = function (canvasContext, x, y) {
@@ -424,6 +427,9 @@ const ImageSprite = ((_super) => {
     }
     return ImageSprite
 })(GameSprite)
+
+
+
 const Button = ((_super) => {
     __extends(Button, _super)
 
@@ -444,6 +450,7 @@ const Button = ((_super) => {
     }
     Button.prototype.leaved = function () {
     }
+
     Button.prototype._runBefore = function () {
         this.clickId = GameScreenClick.addClickItem(() => {
             const scale = this.getScale()
@@ -455,6 +462,7 @@ const Button = ((_super) => {
             result.endY = result.beginY + height
             return result
         })
+        // TODO: bug
         this.eventListener = ({detail}) => {
             if (this.clickId === detail.id) {
                 switch (detail.type) {
@@ -484,6 +492,9 @@ const Button = ((_super) => {
     }
     return Button
 })(GameSprite)
+
+
+
 const SwitchSprite = ((_super) => {
     __extends(SwitchSprite, _super)
 

@@ -20,6 +20,8 @@ window.GameWorldManager = (() => {
                 orientationCss.innerHTML = "*{border:0;padding:0;margin:0;}canvas{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}.audio-controls{display:none;}.canvas-panel .canvas-container{width:100vw;height:100vh;}.canvas-panel .canvas-container canvas{height:100vw;width:56.25vw;left:21.875vw;position:absolute;top:calc((100vh - 56.25vw) / 2 - 21.875vw);transform:rotate(-90deg);-o-transform:rotate(-90deg);-ms-transform:rotate(-90deg);-moz-transform:rotate(-90deg);-webkit-transform:rotate(-90deg);}@media only screen and (min-width:177.778vh){.canvas-panel .canvas-container canvas{width:100vh;top:-38.889vh;height:177.778vh;left:calc((100vw - 177.778vh) / 2 + 38.889vh);}}@media only screen and (orientation:portrait){.canvas-panel{display:flex;justify-content:center;}.canvas-panel .canvas-container{display:flex;align-items:center;}.canvas-panel .canvas-container canvas{margin:auto;transform:none;position:initial;width:56.25vh;height:100vh;max-width:100vw;max-height:177.778vw;}}"
             } else if (GameWorldManager.Direction.landscape === worldDirection) {
                 orientationCss.innerHTML = "*{border:0;padding:0;margin:0;}canvas{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}.audio-controls{display:none;}.canvas-panel{display:flex;justify-content:center;}.canvas-panel .canvas-container{width:100vw;height:100vh;display:flex;align-items:center;}.canvas-panel .canvas-container canvas{margin:auto;width:100vw;height:56.25vw;max-height:100vh;max-width:177.778vh;}@media only screen and (orientation:portrait){.canvas-panel .canvas-container canvas{height:100vw;left:-38.889vw;width:177.778vw;position:absolute;top:calc((100vh - 177.778vw) / 2 + 38.889vw);transform:rotate(90deg);-ms-transform:rotate(90deg);-moz-transform:rotate(90deg);-webkit-transform:rotate(90deg);-o-transform:rotate(90deg);}@media only screen and (max-height:177.778vw){.canvas-panel .canvas-container canvas{width:100vh;top:21.875vh;height:56.25vh;left:calc((100vw - 56.25vh) / 2 - 21.875vh);}}}"
+            } else {
+                return
             }
             if (fistSetSize) {
                 GameWorldManager.setWorldSize(worldWidth, worldHeight)
@@ -57,6 +59,8 @@ window.GameWorldManager = (() => {
         } else if (GameWorldManager.Direction.landscape === worldDirection) {
             hScale = 1080 * (worldWidth / 1920)
             wScale = 1920 * (worldHeight / 1080)
+        } else {
+            return
         }
         const w = Math.floor(wScale) - worldWidth, h = Math.floor(hScale) - worldHeight
         if (Math.abs(w) >= Math.abs(h)) {
