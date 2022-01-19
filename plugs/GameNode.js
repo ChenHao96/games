@@ -318,7 +318,6 @@ const GameSprite = ((_super) => {
 })(DrawPicture)
 const TextSprite = ((_super) => {
     __extends(TextSprite, _super)
-
     function TextSprite(text) {
         const _this = _super.call(this) || this
         this.setFontSize(64)
@@ -328,7 +327,6 @@ const TextSprite = ((_super) => {
         this.setText(text)
         return _this
     }
-
     TextSprite.prototype.getText = function () {
         return this._text
     }
@@ -396,14 +394,12 @@ const TextSprite = ((_super) => {
 })(GameSprite)
 const ImageSprite = ((_super) => {
     __extends(ImageSprite, _super)
-
     function ImageSprite(src) {
         const _this = _super.call(this) || this
         this.setSrc(src)
         this.placeholder = false
         return _this
     }
-
     ImageSprite.prototype.setPlaceholder = function (value) {
         this.placeholder = true === value || "true" === value || "true" === value
     }
@@ -427,19 +423,14 @@ const ImageSprite = ((_super) => {
     }
     return ImageSprite
 })(GameSprite)
-
-
-
 const Button = ((_super) => {
     __extends(Button, _super)
-
     function Button() {
         const _this = _super.call(this) || this
         this.setWidth(0)
         this.setHeight(0)
         return _this
     }
-
     Button.prototype.clickUp = function () {
     }
     Button.prototype.clickDown = function () {
@@ -450,51 +441,48 @@ const Button = ((_super) => {
     }
     Button.prototype.leaved = function () {
     }
-
     Button.prototype._runBefore = function () {
-        // this.clickId = GameScreenClick.addClickItem(() => {
-        //     const scale = this.getScale()
-        //     const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
-        //     const margin = GameWorldManager.getMargin()
-        //     const dx = this.getAX() + margin.left - width / 2, dy = this.getAY() + margin.top - height / 2
-        //     const result = {beginX: dx, beginY: dy}
-        //     result.endX = result.beginX + width
-        //     result.endY = result.beginY + height
-        //     return result
-        // })
-        // // TODO: bug
-        // this.eventListener = ({detail}) => {
-        //     if (this.clickId === detail.id) {
-        //         switch (detail.type) {
-        //             case "clickDown":
-        //                 this.clickDown()
-        //                 break;
-        //             case "clickUp":
-        //                 this.clickUp()
-        //                 break;
-        //             case "clicked":
-        //                 this.clicked()
-        //                 break;
-        //             case "hovered":
-        //                 this.hovered()
-        //                 break;
-        //             case "leaved":
-        //                 this.leaved()
-        //                 break;
-        //         }
-        //     }
-        // }
-        // window.addEventListener("GameScreenClick", this.eventListener, false)
+        const buttonArea = () => {
+            const scale = this.getScale()
+            const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
+            const margin = GameWorldManager.getMargin()
+            const dx = this.getAX() + margin.left - width / 2, dy = this.getAY() + margin.top - height / 2
+            const result = {beginX: dx, beginY: dy}
+            result.endX = result.beginX + width
+            result.endY = result.beginY + height
+            return result
+        }
+        this.eventListener = ({detail}) => {
+            const area = buttonArea()
+            if (detail.point.x >= area.beginX && detail.point.x <= area.endX) {
+                if (detail.point.y >= area.beginY && detail.point.y <= area.endY) {
+                    switch (detail.type) {
+                        case "clickDown":
+                            this.clickDown()
+                            break;
+                        case "clickUp":
+                            this.clickUp()
+                            break;
+                        case "clicked":
+                            this.clicked()
+                            break;
+                        case "hovered":
+                            this.hovered()
+                            break;
+                        case "leaved":
+                            this.leaved()
+                            break;
+                    }
+                }
+            }
+        }
+        window.addEventListener("GameScreenClick", this.eventListener, false)
     }
     Button.prototype._runExit = function () {
-        // GameScreenClick.removeClickItem(this.clickId)
-        // window.removeEventListener("GameScreenClick", this.eventListener, false)
+        window.removeEventListener("GameScreenClick", this.eventListener, false)
     }
     return Button
 })(GameSprite)
-
-
-
 const SwitchSprite = ((_super) => {
     __extends(SwitchSprite, _super)
 
@@ -511,7 +499,6 @@ const SwitchSprite = ((_super) => {
         this._switch_ = true
         return _this
     }
-
     SwitchSprite.prototype.leaved = function () {
         this.clickUp()
     }
@@ -562,7 +549,6 @@ const SwitchSprite = ((_super) => {
 })(Button)
 const ButtonSprite = ((_super) => {
     __extends(ButtonSprite, _super)
-
     function ButtonSprite(notClick, clicked, process) {
         const _this = _super.call(this) || this
         this._image = undefined
@@ -576,7 +562,6 @@ const ButtonSprite = ((_super) => {
         }
         return _this
     }
-
     ButtonSprite.prototype.setNotClick = function (src) {
         if (src && typeof src === "string") {
             if (undefined === this._notClick) {
