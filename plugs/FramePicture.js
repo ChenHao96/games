@@ -72,6 +72,8 @@ window.FramePicture = (() => {
             }
         }
         context.drawImage(img, sx, sy, sw, sh, dx, dy, width, height)
-        return new Image().src = canvas.toDataURL()
+        const image = new Image()
+        image.src = canvas.toDataURL()
+        return image
     }
 })()
