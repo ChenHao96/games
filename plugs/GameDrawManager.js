@@ -205,6 +205,46 @@ window.GameDrawManager = (() => {
                 this.providedText = new TextSprite("Loading: 0%...")
                 this.providedText.setFontSize(this.providedText.getFontSize() * textScale)
                 this.addChild(this.providedText)
+                if (resources && resources.length > 0) {
+                    waitCount = resources.length
+                    for (let i = 0; i < resources.length; i++) {
+                        const item = resources[i]
+                        if (typeof item === "string") {
+                            const img = new Image()
+                            img.src = item
+                            img.onload = () => {
+                                finishCount += 1
+                            }
+                        } else if (typeof item === "object") {
+                            const img = new Image()
+                            img.src = item.img
+                            img.onload = function () {
+                                const xhr = new XMLHttpRequest()
+                                xhr.responseType = "json"
+                                xhr.withCredentials = true
+                                xhr.overrideMimeType('application/json')
+                                xhr.onload = () => {
+                                    if (xhr.status === 200) {
+                                        const array = xhr.response.frames
+                                        if (array && array.length > 0) {
+                                            waitCount += array.length
+                                            for (let j = 0; j < array.length; j++) {
+                                                const item = array[j]
+                                                resObj[item.filename] = FramePicture(this, item)
+                                                finishCount += 1
+                                            }
+                                        }
+                                        finishCount += 1
+                                    }
+                                }
+                                xhr.open("GET", item.frames)
+                                xhr.send()
+                            }
+                        }
+                    }
+                } else {
+                    waitCount = finishCount = 1
+                }
             }
             colorLayout._runBefore = function () {
                 this.providedText.setX(this.imageSprite.getX())
@@ -224,46 +264,6 @@ window.GameDrawManager = (() => {
             }
         }
         pushScene(splashScenes, preloadScene)
-        if (resources && resources.length > 0) {
-            waitCount = resources.length
-            for (let i = 0; i < resources.length; i++) {
-                const item = resources[i]
-                if (typeof item === "string") {
-                    const img = new Image()
-                    img.src = item
-                    img.onload = () => {
-                        finishCount += 1
-                    }
-                } else if (typeof item === "object") {
-                    const img = new Image()
-                    img.src = item.img
-                    img.onload = function () {
-                        const xhr = new XMLHttpRequest()
-                        xhr.responseType = "json"
-                        xhr.withCredentials = true
-                        xhr.overrideMimeType('application/json')
-                        xhr.onload = () => {
-                            if (xhr.status === 200) {
-                                const array = xhr.response.frames
-                                if (array && array.length > 0) {
-                                    waitCount += array.length
-                                    for (let j = 0; j < array.length; j++) {
-                                        const item = array[j]
-                                        resObj[item.filename] = FramePicture(this, item)
-                                        finishCount += 1
-                                    }
-                                }
-                                finishCount += 1
-                            }
-                        }
-                        xhr.open("GET", item.frames)
-                        xhr.send()
-                    }
-                }
-            }
-        } else {
-            waitCount = finishCount = 1
-        }
     }
     return GameDrawManager
 })()
