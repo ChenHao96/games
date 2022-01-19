@@ -7,8 +7,7 @@
     GameDrawManager.preload([{
         img: "res/tetris.png", frames: "res/tetris.json"
     }], function (resources) {
-        console.log(resources)
-        framework.run(resources)
+        framework.setResources(resources)
         framework.pushScene(new Application())
     })
     GameDrawManager.run()

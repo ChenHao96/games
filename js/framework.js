@@ -20,9 +20,11 @@ framework.getImageByFileName = (fileName) => {
     if (undefined === fileName || undefined === framework._resources) {
         return undefined
     }
-    return framework._resources[fileName]
+    const img = new Image()
+    img.src = framework._resources[fileName]
+    return img
 }
-framework.run = (resources) => {
+framework.setResources = (resources) => {
     framework._resources = resources
 }
 framework.stop = () => {
