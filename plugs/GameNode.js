@@ -452,43 +452,43 @@ const Button = ((_super) => {
     }
 
     Button.prototype._runBefore = function () {
-        this.clickId = GameScreenClick.addClickItem(() => {
-            const scale = this.getScale()
-            const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
-            const margin = GameWorldManager.getMargin()
-            const dx = this.getAX() + margin.left - width / 2, dy = this.getAY() + margin.top - height / 2
-            const result = {beginX: dx, beginY: dy}
-            result.endX = result.beginX + width
-            result.endY = result.beginY + height
-            return result
-        })
-        // TODO: bug
-        this.eventListener = ({detail}) => {
-            if (this.clickId === detail.id) {
-                switch (detail.type) {
-                    case "clickDown":
-                        this.clickDown()
-                        break;
-                    case "clickUp":
-                        this.clickUp()
-                        break;
-                    case "clicked":
-                        this.clicked()
-                        break;
-                    case "hovered":
-                        this.hovered()
-                        break;
-                    case "leaved":
-                        this.leaved()
-                        break;
-                }
-            }
-        }
-        window.addEventListener("GameScreenClick", this.eventListener, false)
+        // this.clickId = GameScreenClick.addClickItem(() => {
+        //     const scale = this.getScale()
+        //     const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
+        //     const margin = GameWorldManager.getMargin()
+        //     const dx = this.getAX() + margin.left - width / 2, dy = this.getAY() + margin.top - height / 2
+        //     const result = {beginX: dx, beginY: dy}
+        //     result.endX = result.beginX + width
+        //     result.endY = result.beginY + height
+        //     return result
+        // })
+        // // TODO: bug
+        // this.eventListener = ({detail}) => {
+        //     if (this.clickId === detail.id) {
+        //         switch (detail.type) {
+        //             case "clickDown":
+        //                 this.clickDown()
+        //                 break;
+        //             case "clickUp":
+        //                 this.clickUp()
+        //                 break;
+        //             case "clicked":
+        //                 this.clicked()
+        //                 break;
+        //             case "hovered":
+        //                 this.hovered()
+        //                 break;
+        //             case "leaved":
+        //                 this.leaved()
+        //                 break;
+        //         }
+        //     }
+        // }
+        // window.addEventListener("GameScreenClick", this.eventListener, false)
     }
     Button.prototype._runExit = function () {
-        GameScreenClick.removeClickItem(this.clickId)
-        window.removeEventListener("GameScreenClick", this.eventListener, false)
+        // GameScreenClick.removeClickItem(this.clickId)
+        // window.removeEventListener("GameScreenClick", this.eventListener, false)
     }
     return Button
 })(GameSprite)
