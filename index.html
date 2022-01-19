@@ -13,16 +13,8 @@
 <!--    <script src="plugs/GameDrawManager.js"></script>-->
 </head>
 <body>
-<input type="file" onchange="printFile(this)">
+<script src="plugs/AudioUtil.js"></script>
 <script type="text/javascript">
-    function printFile(self) {
-        const reader = new FileReader()
-        reader.onload = function (evt) {
-            console.log(evt.target.result)
-        }
-        reader.readAsArrayBuffer(self)
-    }
-
     // (function () {
     //     // GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
     //     // GameWorldManager.setWorldSize(1080, 1920)

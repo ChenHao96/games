@@ -72,3 +72,8 @@ const AudioUtil = (() => {
     }
     return AudioUtil
 })()
+
+(() => {
+    const util = new AudioUtil()
+    util.fetchAudio(["res/click.mp3", "res/a.mp3"])
+})()
