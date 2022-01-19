@@ -5,23 +5,32 @@
     <title>Steven Canvas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
     <link rel="shortcut icon" type="image/x-icon" id="faviconIco" href="favicon.ico"/>
-    <script src="plugs/GameNode.js"></script>
-    <script src="plugs/FramePicture.js"></script>
-    <script src="plugs/GameAudioManager.js"></script>
-    <script src="plugs/GameWorldManager.js"></script>
-    <script src="plugs/GameScreenClick.js"></script>
-    <script src="plugs/GameDrawManager.js"></script>
+<!--    <script src="plugs/GameNode.js"></script>-->
+<!--    <script src="plugs/FramePicture.js"></script>-->
+<!--    <script src="plugs/GameAudioManager.js"></script>-->
+<!--    <script src="plugs/GameWorldManager.js"></script>-->
+<!--    <script src="plugs/GameScreenClick.js"></script>-->
+<!--    <script src="plugs/GameDrawManager.js"></script>-->
 </head>
 <body>
+<input type="file" onchange="printFile(this)">
 <script type="text/javascript">
-    (function () {
-        GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
-        GameWorldManager.setWorldSize(1080, 1920)
-        GameAudioManager.activityAudio()
-        GameScreenClick.activityClick()
-        GameDrawManager.run()
-        window.addEventListener("GameScreenClick", function ({detail}) {console.log(detail)})
-    })()
+    function printFile(self) {
+        const reader = new FileReader()
+        reader.onload = function (evt) {
+            console.log(evt.target.result)
+        }
+        reader.readAsArrayBuffer(self)
+    }
+
+    // (function () {
+    //     // GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
+    //     // GameWorldManager.setWorldSize(1080, 1920)
+    //     // GameAudioManager.activityAudio()
+    //     // GameScreenClick.activityClick()
+    //     // GameDrawManager.run()
+    //     // window.addEventListener("GameScreenClick", function ({detail}) {console.log(detail)})
+    // })()
 </script>
 </body>
 </html>
