@@ -53,6 +53,7 @@ window.GameAudioManager = (() => {
         }
         appendAudio.volume = effectsVolume
         // TODO: safari 不能多音频播放 合成后播放||边播放边合成
+        // /iPhone|iPad|iPod|Mac|Safari/i.test(navigator.userAgent)
         playMusic(appendAudio)
     }
     let cacheBackgroundMusic = undefined, actionPause = false
