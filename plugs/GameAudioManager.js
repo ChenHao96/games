@@ -1,6 +1,6 @@
 window.GameAudioManager = (() => {
-    if(/iPhone|iPad|iPod|Mac|Safari/i.test(navigator.userAgent)){
-        const preload = {}, AudioUtil = {}
+    if (/iPhone|iPad|iPod|Mac|Safari/i.test(navigator.userAgent)) {
+        const preload = {}, AudioUtil = {type: "ios"}
         const copyAudioTrack = (inputBuffer, volume) => {
             const rate = inputBuffer.sampleRate
             const channels = inputBuffer.numberOfChannels
@@ -33,7 +33,7 @@ window.GameAudioManager = (() => {
                     xhr.onerror = function () {
                         reject(this.status)
                     }
-                    xhr.open("GET", url)
+                    xhr.open("GET", url + ".mp3")
                     xhr.send()
                 }
             })
@@ -128,10 +128,10 @@ window.GameAudioManager = (() => {
                 backgroundVolumeTmp = backgroundVolume
             }
         }
-        AudioUtil.activityAudio=()=>{}
+        AudioUtil.activityAudio = () => {
+        }
         return AudioUtil
-    }else{
-
+    } else {
         const audioTypes = [{type: "audio/ogg", suffix: ".ogg"}, {type: "audio/mpeg", suffix: ".mp3"}]
         const createAudioControl = (name) => {
             const audio = document.createElement("audio")
@@ -159,7 +159,7 @@ window.GameAudioManager = (() => {
             }
         }
         let audioIndex = 0, managerMuted = false
-        const cacheSoundEffect = {}, playingAudio = {}, GameAudioManager = {}
+        const cacheSoundEffect = {}, playingAudio = {}, GameAudioManager = {type: "other"}
         GameAudioManager.activityAudio = function () {
             document.addEventListener("click", function playVoice() {
                 document.removeEventListener("click", playVoice, false)
