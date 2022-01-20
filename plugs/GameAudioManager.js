@@ -54,7 +54,7 @@ window.GameAudioManager = (() => {
                 source.stop()
             }
         }
-        // 手机锁屏没有声音了
+        // TODO: 锁屏后打开没有声音了 safari没有声音
         source = audioContext.createBufferSource()
         source.connect(audioContext.destination)
         source.buffer = backgroundAudioBuffer
