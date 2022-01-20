@@ -48,7 +48,7 @@ window.GameAudioManager = (() => {
                 source.stoped = true
                 source.stop()
             }
-        }
+        }// 手机锁屏没有声音了
         source = audioContext.createBufferSource()
         source.connect(audioContext.destination)
         source.buffer = backgroundAudioBuffer
