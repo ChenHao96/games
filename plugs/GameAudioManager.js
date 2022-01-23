@@ -47,14 +47,15 @@ window.GameAudioManager = (() => {
     const backgroundAudio = function (inputBuffer) {
         if (lastBackground !== inputBuffer) {
             lastBackground = inputBuffer
-            audioContext = new AudioContext()
             backgroundAudioBuffer = copyAudioTrack(inputBuffer, backgroundVolumeTmp)
             if (source) {
                 source.stoped = true
                 source.stop()
             }
         }
-        // TODO: 锁屏后打开没有声音了 safari没有声音
+        resumeCloseAudio(inputBuffer)
+    }
+    const resumeCloseAudio = function (inputBuffer) {
         source = audioContext.createBufferSource()
         source.connect(audioContext.destination)
         source.buffer = backgroundAudioBuffer
@@ -134,6 +135,18 @@ window.GameAudioManager = (() => {
         backgroundVolumeChange()
     }
     AudioUtil.activityAudio = () => {
+        document.body.addEventListener('click', function playAudio() {
+            if (undefined === audioContext) {
+                audioContext = new AudioContext()
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume()
+            } else if (audioContext.state === 'closed') {
+                // 恢复后会重新播放
+                audioContext = new AudioContext()
+                resumeCloseAudio(lastBackground)
+            }
+        }, false)
     }
     return AudioUtil
 })()
