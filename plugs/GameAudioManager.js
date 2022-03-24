@@ -80,7 +80,7 @@ window.GameAudioManager = (() => {
                 const offset = Math.round((audioContext.currentTime % backgroundAudioBuffer.duration) * backgroundAudioBuffer.sampleRate)
                 for (let channelNumber = 0; channelNumber < inputBuffer.numberOfChannels; channelNumber++) {
                     const input = inputBuffer.getChannelData(channelNumber)
-                    // 循环播放,可能存在merge一部分,后半部分丢失
+                    // TODO: 循环播放,可能存在merge一部分,后半部分丢失
                     const output = backgroundAudioBuffer.getChannelData(channelNumber)
                     for (let i = 0; i < input.length; i++) {
                         output[i + offset] += input[i] * effectsVolumeTmp
@@ -142,7 +142,6 @@ window.GameAudioManager = (() => {
             if (audioContext.state === 'suspended') {
                 audioContext.resume()
             } else if (audioContext.state === 'closed') {
-                // 恢复后会重新播放
                 audioContext = new AudioContext()
                 resumeCloseAudio(lastBackground)
             }

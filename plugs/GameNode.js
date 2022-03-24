@@ -277,36 +277,6 @@ const ColorLayout = ((_super) => {
     }
     return ColorLayout
 })(GameLayout)
-const ImageLayout = ((_super) => {
-    __extends(ImageLayout, _super)
-
-    function ImageLayout(src) {
-        const _this = _super.call(this) || this
-        this.setSrc(src)
-        return _this
-    }
-
-// TODO: 拉伸 平铺
-// TODO: 偏移
-    ImageLayout.prototype.setSrc = function (src) {
-        if (src && typeof src === "string") {
-            if (undefined === this._image) {
-                this._image = new Image()
-            }
-            this._image.src = src
-            this.setWidth(this._image.width)
-            this.setHeight(this._image.height)
-        }
-    }
-    ImageLayout.prototype._drawPicture = function (canvasContext, x, y) {
-        if (this._image) {
-            const scale = this.getScale()
-            const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
-            canvasContext.drawImage(this._image, x, y, width, height)
-        }
-    }
-    return ImageLayout
-})(GameLayout)
 const GameSprite = ((_super) => {
     __extends(GameSprite, _super)
 
