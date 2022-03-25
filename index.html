@@ -13,15 +13,6 @@
     <script src="plugs/GameDrawManager.js"></script>
 </head>
 <body>
-<script type="text/javascript">
-    (function () {
-        GameWorldManager.setDirection(GameWorldManager.Direction.portraiture)
-        GameWorldManager.setWorldSize(1080, 1920)
-        GameAudioManager.activityAudio()
-        GameScreenClick.activityClick()
-        GameDrawManager.run()
-        window.addEventListener("GameScreenClick", function ({detail}) {console.log(detail)})
-    })()
-</script>
+<script src="src/app.js"></script>
 </body>
 </html>
