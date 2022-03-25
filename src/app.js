@@ -1,7 +1,7 @@
 (function () {
     const res = {
-        "icon_jinbi.png": "res/icon_jinbi.png",
-        "icon_zuanshi.png": "res/icon_zuanshi.png",
+        "icon_jinbi.png": "res/icon/icon_jinbi.png",
+        "icon_zuanshi.png": "res/icon/icon_zuanshi.png",
 
         "shuiguo_bj.jpg": "res/shuiguo_bj.jpg",
         "shuiguo_cao.png": "res/shuiguo_cao.png",
@@ -25,8 +25,25 @@
         "shuiguo_jcxinxi.png": "res/shuiguo_jcxinxi.png",
     };
 
+    const numbers = new Image()
+    numbers.src = "res/number/number.png"
+    numbers.onload = () => {
+        const request = new XMLHttpRequest()
+        request.responseType = "json"
+        request.onreadystatechange = () => {
+            if (request.readyState === 4) {
+                const array = request.response.frames
+                for (let i = 0; i < array.length; i++) {
+                    window.FramePicture(numbers, array[i])
+                }
+            }
+        }
+        request.open("GET", numbers.src.substring(0, numbers.src.lastIndexOf(".")) + ".json")
+        request.send()
+    }
+
     for (let field in res) {
-        new Image(res[field])
+        new Image().src = res[field]
     }
 
     GameWorldManager.setDirection(GameWorldManager.Direction.landscape)
@@ -152,6 +169,11 @@
     lucky.setPosition(title.getX(), title.getY() + title.getHeight() / 2 + lucky.getHeight() / 2)
     layout.addChild(title, 2)
     layout.addChild(lucky, 2)
+
+    const goldPool = new TextImageSprite("res/number/number.png")
+    goldPool.setText("1,000,000")
+    goldPool.setPosition(0, -258)
+    layout.addChild(goldPool, 2)
 
     const rule = new ButtonSprite(res["shuiguo_guiz.png"], () => {
         console.log("click rule")
