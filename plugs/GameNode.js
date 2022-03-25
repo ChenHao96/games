@@ -288,6 +288,7 @@ const GameSprite = ((_super) => {
 })(DrawPicture)
 const TextSprite = ((_super) => {
     __extends(TextSprite, _super)
+
     function TextSprite(text) {
         const _this = _super.call(this) || this
         this.setFontSize(64)
@@ -297,6 +298,7 @@ const TextSprite = ((_super) => {
         this.setText(text)
         return _this
     }
+
     TextSprite.prototype.getText = function () {
         return this._text
     }
@@ -362,14 +364,102 @@ const TextSprite = ((_super) => {
     }
     return TextSprite
 })(GameSprite)
+const TextImageSprite = ((_super) => {
+    __extends(TextImageSprite, _super)
+
+    function TextImageSprite(framesUrl) {
+        const _this = _super.call(this) || this
+        this.inited = false
+        this._text_frames = {}
+        const frames = this.framesImg = new Image()
+        this.framesImg.src = framesUrl
+        this.framesImg.onload = () => {
+            const request = new XMLHttpRequest()
+            request.responseType = "json"
+            request.onreadystatechange = () => {
+                if (request.readyState === 4) {
+                    const array = request.response.frames
+                    for (let i = 0; i < array.length; i++) {
+                        const item = array[i], filename = item.filename
+                        const char = filename.substring(0, filename.lastIndexOf("."))
+                        this._text_frames[char] = window.FramePicture(frames, item)
+                    }
+
+                    this.inited = true
+                    if (this._text && this._text.length > 0) {
+                        this._makeImage(this._text)
+                    }
+                }
+            }
+            request.open("GET", frames.src.substring(0, frames.src.lastIndexOf(".")) + ".json")
+            request.send()
+        }
+        return _this
+    }
+
+    TextImageSprite.prototype.setText = function (text) {
+        if (text && text.length > 0) {
+            this._text = text
+            if (this.inited) {
+                this._makeImage(text)
+            }
+        } else {
+            this._text = undefined
+            this._image = undefined
+        }
+    }
+    TextImageSprite.prototype._makeImage = function (text) {
+        let canvasHeight = 0, canvasWidth = 0
+        for (let i = 0; i < text.length; i++) {
+            const char = text.charAt(i)
+            const image = this._text_frames[char]
+            canvasWidth += image.width
+            if (image.height > canvasHeight) {
+                canvasHeight = image.height
+            }
+        }
+
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d')
+        canvas.width = canvasWidth
+        canvas.height = canvasHeight
+        this.setWidth(canvasWidth)
+        this.setHeight(canvasHeight)
+
+        let beginX = 0
+        for (let i = 0; i < text.length; i++) {
+            const char = text.charAt(i)
+            const image = this._text_frames[char]
+            context.drawImage(image, beginX, 0)
+            beginX += image.width
+        }
+
+        const image = new Image()
+        image.src = canvas.toDataURL()
+        image.onload = () => {
+            this._image = image
+        }
+    }
+
+    TextImageSprite.prototype._drawPicture = function (canvasContext, x, y) {
+        if (this._image) {
+            const scale = this.getScale()
+            const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
+            canvasContext.drawImage(this._image, x, y, width, height)
+        }
+    }
+    return TextImageSprite
+})(GameSprite)
 const ImageSprite = ((_super) => {
     __extends(ImageSprite, _super)
+
     function ImageSprite(src) {
         const _this = _super.call(this) || this
         this.setSrc(src)
         this.placeholder = false
         return _this
     }
+
     ImageSprite.prototype.setPlaceholder = function (value) {
         this.placeholder = true === value || "true" === value || "true" === value
     }
@@ -395,12 +485,14 @@ const ImageSprite = ((_super) => {
 })(GameSprite)
 const Button = ((_super) => {
     __extends(Button, _super)
+
     function Button() {
         const _this = _super.call(this) || this
         this.setWidth(0)
         this.setHeight(0)
         return _this
     }
+
     Button.prototype.clickUp = function () {
     }
     Button.prototype.clickDown = function () {
@@ -469,6 +561,7 @@ const SwitchSprite = ((_super) => {
         this._switch_ = true
         return _this
     }
+
     SwitchSprite.prototype.leaved = function () {
         this.clickUp()
     }
@@ -519,28 +612,41 @@ const SwitchSprite = ((_super) => {
 })(Button)
 const ButtonSprite = ((_super) => {
     __extends(ButtonSprite, _super)
+
     function ButtonSprite(notClick, clicked, process) {
         const _this = _super.call(this) || this
         this._image = undefined
         this.setNotClick(notClick)
-        this.setClicked(clicked)
+        if (typeof clicked === "function") {
+            this._process = clicked
+        } else {
+            this.setClicked(clicked)
+        }
         if (process && typeof process === "function") {
             this._process = process
-        } else {
-            this._process = () => {
-            }
+        }
+        if (this._notClick) {
+            this._image = this._notClick
+            this.setWidth(this._notClick.width)
+            this.setHeight(this._notClick.height)
         }
         return _this
     }
+
     ButtonSprite.prototype.setNotClick = function (src) {
         if (src && typeof src === "string") {
             if (undefined === this._notClick) {
                 this._notClick = new Image()
             }
             this._notClick.src = src
-            this._image = this._notClick
-            this.setWidth(this._notClick.width)
-            this.setHeight(this._notClick.height)
+        }
+    }
+    ButtonSprite.prototype.setClickDisable = function (src) {
+        if (src && typeof src === "string") {
+            if (undefined === this._clickDisable) {
+                this._clickDisable = new Image()
+            }
+            this._clickDisable.src = src
         }
     }
     ButtonSprite.prototype.setClicked = function (src) {
@@ -555,17 +661,30 @@ const ButtonSprite = ((_super) => {
         this.clickUp()
     }
     ButtonSprite.prototype.clickUp = function () {
+        if (this._disable_) {
+            return
+        }
         this.setScale(1)
         this._image = this._notClick
+        this.setWidth(this._notClick.width)
+        this.setHeight(this._notClick.height)
     }
     ButtonSprite.prototype.clickDown = function () {
-        this.setScale(0.95)
+        if (this._disable_) {
+            return
+        }
         if (this._clicked) {
             this._image = this._clicked
+            this.setWidth(this._clicked.width)
+            this.setHeight(this._clicked.height)
+        } else {
+            this.setScale(0.95)
         }
     }
     ButtonSprite.prototype.clicked = function () {
-        this._image = this._notClick
+        if (this._disable_) {
+            return
+        }
         this._process()
     }
     ButtonSprite.prototype._drawPicture = function (canvasContext, x, y) {
@@ -573,6 +692,16 @@ const ButtonSprite = ((_super) => {
             const scale = this.getScale()
             const width = scale.width * this.getWidth(), height = scale.height * this.getHeight()
             canvasContext.drawImage(this._image, x, y, width, height)
+        }
+    }
+    ButtonSprite.prototype.setDisable = function (disable) {
+        this._disable_ = true === disable || disable === "true" || disable === "TRUE"
+        if (this._disable_) {
+            if (this._clickDisable) {
+                this._image = this._clickDisable
+                this.setWidth(this._clickDisable.width)
+                this.setHeight(this._clickDisable.height)
+            }
         }
     }
     return ButtonSprite
