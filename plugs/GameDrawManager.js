@@ -157,7 +157,7 @@ window.GameDrawManager = (() => {
     GameDrawManager.run = () => {
         if (!runnable) {
             runnable = true
-            console.log("Provided by Steven Canvas. Version: 1.1.0")
+            console.log("Provided by Steven Canvas. Version: 1.2.0")
             pushScene(splashScenes, splashScene)
             const initFps = 1000 / managerFps
             let lastUpdate = Date.now()

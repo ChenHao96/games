@@ -57,6 +57,29 @@ const GameScene = (() => {
         child.parent = this
         this.changeNode = true
     }
+    GameScene.prototype.removeChild = function (child) {
+        if (typeof child === "number" && child >= 0) {
+            let doFor = false
+            for (let i = child + 1; i < this.nodeArray.length; i++) {
+                this.nodeArray[i - 1] = this.nodeArray[i]
+                doFor = true
+            }
+            if (doFor) {
+                this.nodeArray.length -= 1
+            }
+        } else if (child instanceof GameLayout) {
+            for (let i = 0; i < this.nodeArray.length; i++) {
+                const item = this.nodeArray[i]
+                if (item === child) {
+                    for (let y = i + 1; y < this.nodeArray.length; y++) {
+                        this.nodeArray[y - 1] = this.nodeArray[y]
+                    }
+                    this.nodeArray.length -= 1
+                    break
+                }
+            }
+        }
+    }
     GameScene.prototype.foreachChild = function (consumer) {
         if (this.indexNode) {
             const result = this.nodeArray ? this.nodeArray : []
@@ -258,8 +281,10 @@ const Color = (() => {
 const ColorLayout = ((_super) => {
     __extends(ColorLayout, _super)
 
-    function ColorLayout() {
-        return _super.apply(this, arguments) || this
+    function ColorLayout(color) {
+        const _this = _super.call(this) || this
+        this.setColor(color)
+        return _this
     }
 
     ColorLayout.prototype.setColor = function (color) {
@@ -276,6 +301,31 @@ const ColorLayout = ((_super) => {
         }
     }
     return ColorLayout
+})(GameLayout)
+const ImageLayout = ((_super) => {
+    __extends(ImageLayout, _super)
+
+    function ImageLayout(src) {
+        const _this = _super.call(this) || this
+        this.setSrc(src)
+        return _this
+    }
+
+    ImageLayout.prototype.setSrc = function (src) {
+        if (src && typeof src === "string") {
+            if (undefined === this._image) {
+                this._image = new Image()
+            }
+            this._image.src = src
+        }
+    }
+
+    ImageLayout.prototype._drawPicture = function (canvasContext, x, y) {
+        if (this._image) {
+            canvasContext.drawImage(this._image, x, y, this.getWidth(), this.getHeight())
+        }
+    }
+    return ImageLayout
 })(GameLayout)
 const GameSprite = ((_super) => {
     __extends(GameSprite, _super)
