@@ -293,8 +293,7 @@ const TextSprite = ((_super) => {
         const _this = _super.call(this) || this
         this.setFontSize(64)
         this.setFillStyle("#000")
-        this.setFontWeight("bold")
-        this.setFontFamily("Georgia")
+        this.setFontFamily("Arial")
         this.setText(text)
         return _this
     }
@@ -311,7 +310,7 @@ const TextSprite = ((_super) => {
     const canvasContext = document.createElement("canvas").getContext("2d")
     TextSprite.prototype._calculateViewSize = function () {
         if (this._text) {
-            canvasContext.font = this._fontSize + "px " + this._fontWeight + " " + this._fontFamily
+            canvasContext.font = this._fontSize + "px " + this._fontFamily
             const metrics = canvasContext.measureText(this._text)
             this.setWidth(metrics.width)
             this.setHeight(metrics.actualBoundingBoxAscent)
@@ -334,15 +333,6 @@ const TextSprite = ((_super) => {
             this._fillStyle = value
         }
     }
-    TextSprite.prototype.getFontWeight = function () {
-        return this._fontWeight
-    }
-    TextSprite.prototype.setFontWeight = function (value) {
-        if (value && typeof value === "string") {
-            this._fontWeight = value
-            this._calculateViewSize()
-        }
-    }
     TextSprite.prototype.getFontFamily = function () {
         return this._fontFamily
     }
@@ -352,14 +342,24 @@ const TextSprite = ((_super) => {
             this._calculateViewSize()
         }
     }
+    TextSprite.prototype.setStroke = function (color, lineWidth) {
+        this._lineWidth = lineWidth
+        this._strokeStyle = color
+    }
     TextSprite.prototype._drawPicture = function (canvasContext, x, y) {
         if (this._text) {
-            canvasContext.fillStyle = this.getFillStyle()
             const scale = this.getScale()
-            const fontSize = this._fontSize * scale.width
             const dy = this.getHeight() * scale.height
-            canvasContext.font = fontSize + "px " + this._fontWeight + " " + this._fontFamily
-            canvasContext.fillText(this._text, x, y + dy)
+            const fontSize = this._fontSize * scale.width
+            canvasContext.font = fontSize + "px " + this._fontFamily
+            let textX = x, textY = y + dy
+            if (this._lineWidth > 0 && this._strokeStyle) {
+                canvasContext.lineWidth = this._lineWidth
+                canvasContext.strokeStyle = this._strokeStyle
+                canvasContext.strokeText(this._text, textX, textY)
+            }
+            canvasContext.fillStyle = this.getFillStyle()
+            canvasContext.fillText(this._text, textX, textY)
         }
     }
     return TextSprite
