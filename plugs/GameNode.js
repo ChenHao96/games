@@ -55,26 +55,20 @@ const GameScene = (() => {
         }
         array.push(child)
         child.parent = this
+        child.parentIndex = index
         this.changeNode = true
     }
     GameScene.prototype.removeChild = function (child) {
-        if (typeof child === "number" && child >= 0) {
-            let doFor = false
-            for (let i = child + 1; i < this.nodeArray.length; i++) {
-                this.nodeArray[i - 1] = this.nodeArray[i]
-                doFor = true
-            }
-            if (doFor) {
-                this.nodeArray.length -= 1
-            }
-        } else if (child instanceof GameLayout) {
-            for (let i = 0; i < this.nodeArray.length; i++) {
-                const item = this.nodeArray[i]
+        if (child instanceof GameLayout) {
+            const array = this.indexNode[child.parentIndex]
+            for (let i = 0; i < array.length; i++) {
+                const item = array[i]
                 if (item === child) {
-                    for (let y = i + 1; y < this.nodeArray.length; y++) {
-                        this.nodeArray[y - 1] = this.nodeArray[y]
+                    for (let y = i + 1; y < array.length; y++) {
+                        array[y - 1] = array[y]
                     }
-                    this.nodeArray.length -= 1
+                    array.pop()
+                    this.changeNode = true
                     break
                 }
             }
